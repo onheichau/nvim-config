@@ -8,15 +8,15 @@ return require('packer').startup(function(use)
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
 
+  -- Color theme
+  use { "ellisonleao/gruvbox.nvim" }
+
   -- telescope
   use {
     'nvim-telescope/telescope.nvim', tag = '0.1.0',
     -- or                            , branch = '0.1.x',
     requires = { {'nvim-lua/plenary.nvim'} }
   }
-
-  -- color scheme
-  use 'folke/tokyonight.nvim'
 
   --treesitter
   use ('nvim-treesitter/nvim-treesitter', {run = ':TSUpdate'}) 
@@ -26,11 +26,6 @@ return require('packer').startup(function(use)
     "williamboman/mason.nvim", 
     "williamboman/mason-lspconfig.nvim", 
     "neovim/nvim-lspconfig"
-  }
-
-  use {
-    'nvim-lualine/lualine.nvim',
-    requires = { 'kyazdani42/nvim-web-devicons', opt = true }
   }
 
   -- auto closing
