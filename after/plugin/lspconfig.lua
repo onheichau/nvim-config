@@ -89,6 +89,12 @@ lspconfig["emmet_ls"].setup({
   filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
 })
 
+-- clangd
+lspconfig["clangd"].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+})
+
 -- configure lua server (with special settings)
 lspconfig["lua_ls"].setup({
   capabilities = capabilities,
