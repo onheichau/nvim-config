@@ -4,7 +4,9 @@ vim.keymap.set("n", "<Tab>", "<C-w><C-w>")
 vim.keymap.set("n", "<leader>s", "yiw:%s/<C-r>\"//g<Left><Left>", {noremap = true})
 vim.keymap.set("n", "<leader>=", "=ap", {noremap = true})
 vim.keymap.set("n", "<leader><Tab>", ":vsplit<Enter><C-w><C-w>", {noremap = true})
-vim.keymap.set("n", "<leader>t", vim.cmd.NvimTreeToggle)
+
+vim.keymap.set("i", "jk", "<ESC>")
+vim.keymap.set("n", "<leader>n", vim.cmd.bnext)
 
 vim.cmd('inoremap <C-l> <C-o>l')
 vim.cmd('inoremap <C-h> <C-o>h')
@@ -32,4 +34,3 @@ vim.keymap.set("n", "<leader>d", "d$a", {noremap = true})
 vim.keymap.set("n", "<leader><BS>", "d0i	", {noremap = true})
 
 -- Files
---

@@ -10,12 +10,6 @@ if not cmp_nvim_lsp_status then
   return
 end
 
--- import typescript plugin safely
-local typescript_setup, typescript = pcall(require, "typescript")
-if not typescript_setup then
-  return
-end
-
 local keymap = vim.keymap -- for conciseness
 
 -- enable keybinds only for when lsp server available
@@ -50,50 +44,18 @@ local capabilities = cmp_nvim_lsp.default_capabilities()
 
 -- Change the Diagnostic symbols in the sign column (gutter)
 -- (not in youtube nvim video)
-local signs = { Error = " ", Warn = " ", Hint = "ﴞ ", Info = " " }
-for type, icon in pairs(signs) do
-  local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-end
-
--- configure html server
-lspconfig["html"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
--- configure typescript server with plugin
-typescript.setup({
-  server = {
-    capabilities = capabilities,
-    on_attach = on_attach,
-  },
-})
-
--- configure css server
-lspconfig["cssls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
--- configure tailwindcss server
-lspconfig["tailwindcss"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
--- configure emmet language server
-lspconfig["emmet_ls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-  filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
-})
+--local signs = { Error = " ", Warn = " ", Hint = "ﴞ ", Info = " " }
+--for type, icon in pairs(signs) do
+--  local hl = "DiagnosticSign" .. type
+--  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+--end
 
 -- clangd
 lspconfig["clangd"].setup({
   capabilities = capabilities,
   on_attach = on_attach,
 })
+
 
 -- configure lua server (with special settings)
 lspconfig["lua_ls"].setup({
