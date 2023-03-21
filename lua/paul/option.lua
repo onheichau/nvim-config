@@ -1,3 +1,5 @@
+vim.opt.guicursor = ""
+
 --line number
 vim.opt.rnu = true
 vim.opt.number = true
@@ -40,3 +42,4 @@ vim.opt.splitright = true -- split vertical window to the right
 vim.opt.splitbelow = true -- split horizontal window to the bottom
 
 vim.opt.iskeyword:append("-") -- consider string-string as whole word
+

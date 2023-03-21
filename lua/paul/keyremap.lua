@@ -1,15 +1,16 @@
 vim.g.mapleader = " "
-vim.keymap.set("n", "<leader> ", vim.cmd.Ex)
+vim.keymap.set("n", "<leader> ", ":w<CR>:Ex<CR>")
 vim.keymap.set("n", "<Tab>", "<C-w><C-w>")
 vim.keymap.set("n", "<leader>s", "yiw:%s/<C-r>\"//g<Left><Left>", {noremap = true})
 vim.keymap.set("n", "<leader>=", "=ap", {noremap = true})
 vim.keymap.set("n", "<leader><Tab>", ":vsplit<Enter><C-w><C-w>", {noremap = true})
 
-vim.keymap.set("i", "jk", "<ESC>")
-vim.keymap.set("n", "<leader>n", vim.cmd.bnext)
+vim.keymap.set("i", "<C-j>", "<ESC>")
+vim.keymap.set("n", "<leader>n", ":w<CR>:bnext<CR>")
 
-vim.cmd('inoremap <C-l> <C-o>l')
-vim.cmd('inoremap <C-h> <C-o>h')
+
+vim.keymap.set("i", "<C-l>", "<right>")
+vim.keymap.set("i", "<C-h>", "<left>")
 
 vim.keymap.set("n", "a", "A", {noremap = true})
 vim.keymap.set("n", "A", "a", {noremap = true})
@@ -33,4 +34,5 @@ vim.cmd('vnoremap <C-k> 15kzz')
 vim.keymap.set("n", "<leader>d", "d$a", {noremap = true})
 vim.keymap.set("n", "<leader><BS>", "d0i	", {noremap = true})
 
--- Files
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
