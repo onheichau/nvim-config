@@ -54,6 +54,7 @@ end
 lspconfig["clangd"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
+	cmd = { "clangd", "--header-insertion=never" },
 })
 
 -- configure lua server (with special settings)
