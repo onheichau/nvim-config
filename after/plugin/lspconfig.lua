@@ -51,10 +51,11 @@ for type, icon in pairs(signs) do
 end
 
 -- clangd
+
 lspconfig["clangd"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
-	cmd = { "clangd", "--header-insertion=never" },
+	cmd = { "clangd", "--header-insertion=never", "--std=c++11" },
 })
 
 -- configure lua server (with special settings)
