@@ -5,7 +5,8 @@ vim.keymap.set("n", "<leader>s", "yiw:%s/<C-r>\"//g<Left><Left>", {noremap = tru
 vim.keymap.set("n", "<leader>=", "=ap", {noremap = true})
 vim.keymap.set("n", "<leader><Tab>", ":vsplit<Enter><C-w><C-w>", {noremap = true})
 
-vim.keymap.set("i", "<C-j>", "<ESC>")
+vim.keymap.set("i", "<ESC>", "<ESC>l")
+vim.keymap.set("i", "<C-j>", "<ESC>l")
 vim.keymap.set("n", "<leader>n", ":w<CR>:bnext<CR>")
 
 
@@ -36,3 +37,5 @@ vim.keymap.set("n", "<leader><BS>", "d0i	", {noremap = true})
 
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+
+-- command sugar
