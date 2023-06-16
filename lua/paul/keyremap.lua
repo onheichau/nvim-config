@@ -8,7 +8,6 @@ vim.keymap.set("n", "<leader>g", ":DiffviewOpen<CR>", {noremap = true})
 vim.keymap.set("n", "<leader>G", ":DiffviewClose<CR>", {noremap = true})
 
 vim.keymap.set("i", "<ESC>", "<ESC>l")
-vim.keymap.set("i", "<C-j>", "<ESC>l")
 vim.keymap.set("n", "<leader>n", ":w<CR>:bnext<CR>")
 
 

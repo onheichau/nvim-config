@@ -41,6 +41,7 @@ lspconfig["emmet_ls"].setup({
   on_attach = on_attach,
   filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
 })
+
 -- configure css server
 lspconfig["cssls"].setup({
   capabilities = capabilities,
@@ -52,6 +53,12 @@ lspconfig["clangd"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
 	cmd = { "clangd" ,"--header-insertion=never" },
+})
+
+-- sqlls
+lspconfig["sqlls"].setup({
+	capabilities = capabilities,
+	on_attach = on_attach,
 })
 
 -- configure lua server (with special settings)
