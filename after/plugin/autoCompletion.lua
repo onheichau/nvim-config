@@ -27,6 +27,7 @@ cmp.setup({
       luasnip.lsp_expand(args.body)
     end,
   },
+
   mapping = cmp.mapping.preset.insert({
     ["<C-k>"] = cmp.mapping.select_prev_item(), -- previous suggestion
     ["<C-j>"] = cmp.mapping.select_next_item(), -- next suggestion
@@ -36,6 +37,7 @@ cmp.setup({
     ["<C-e>"] = cmp.mapping.abort(), -- close completion window
     ["<CR>"] = cmp.mapping.confirm({ select = false }),
   }),
+
   -- sources for autocompletion
   sources = cmp.config.sources({
     { name = "nvim_lsp" }, -- lsp
@@ -43,6 +45,7 @@ cmp.setup({
     { name = "buffer" }, -- text within current buffer
     { name = "path" }, -- file system paths
   }),
+
   -- configure lspkind for vs-code like icons
   formatting = {
     format = lspkind.cmp_format({
