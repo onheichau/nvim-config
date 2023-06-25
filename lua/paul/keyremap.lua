@@ -1,6 +1,8 @@
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader> ", ":w<CR>:Ex<CR>")
-vim.keymap.set("n", "<Tab>", "<C-w><C-w>")
+vim.keymap.set("n", "<leader>p", ":w<CR>:bp<CR>")
+vim.keymap.set("n", "<leader>n", ":w<CR>:bn<CR>")
+-- vim.keymap.set("n", "<Tab>", "<C-w><C-w>")
 vim.keymap.set("n", "<leader>s", "yiw:%s/<C-r>\"//g<Left><Left>", {noremap = true})
 vim.keymap.set("n", "<leader>=", "=ap", {noremap = true})
 vim.keymap.set("n", "<leader><Tab>", ":vsplit<Enter><C-w><C-w>", {noremap = true})
@@ -9,7 +11,8 @@ vim.keymap.set("n", "<leader>G", ":DiffviewClose<CR>", {noremap = true})
 
 vim.keymap.set("i", "<ESC>", "<ESC>l")
 vim.keymap.set("n", "<leader>n", ":w<CR>:bnext<CR>")
-
+vim.keymap.set("n", "n", "nzz")
+vim.keymap.set("n", "N", "Nzz")
 
 vim.keymap.set("i", "<C-l>", "<right>")
 vim.keymap.set("i", "<C-h>", "<left>")
@@ -33,8 +36,5 @@ vim.cmd('vnoremap <C-j> 15jzz')
 vim.cmd('vnoremap <C-k> 15kzz')
 
 -- Editiing
-vim.keymap.set("n", "<leader>d", "d$a", {noremap = true})
-vim.keymap.set("n", "<leader><BS>", "d0i	", {noremap = true})
-
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
