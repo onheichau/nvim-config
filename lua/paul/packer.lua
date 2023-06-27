@@ -59,4 +59,11 @@ return require("packer").startup(function(use)
   -- git diff view
   use("sindrets/diffview.nvim")
 
+  -- debugger integration
+  use ("mfussenegger/nvim-dap")
+  use { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} }
+  use ("theHamsta/nvim-dap-virtual-text")
+
+  -- UI
+  use "lukas-reineke/indent-blankline.nvim"
 end)
