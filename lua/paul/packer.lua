@@ -7,8 +7,14 @@ return require("packer").startup(function(use)
 	-- Packer can manage itself
 	use("wbthomason/packer.nvim")
 
+  use ("tjdevries/colorbuddy.nvim")
+
 	-- Color theme
 	use({ "ellisonleao/gruvbox.nvim" })
+  use {
+    'svrana/neosolarized.nvim',
+    requires = { 'tjdevries/colorbuddy.nvim' }
+  }
 
 	-- telescope
 	use({
@@ -66,4 +72,15 @@ return require("packer").startup(function(use)
 
   -- UI
   use "lukas-reineke/indent-blankline.nvim"
+
+  -- buffer tag on the top
+  use {'akinsho/bufferline.nvim', tag = "*", requires = 'nvim-tree/nvim-web-devicons'}
+
+  --Commenter
+  use {
+      'numToStr/Comment.nvim',
+      config = function()
+          require('Comment').setup()
+      end
+  }
 end)

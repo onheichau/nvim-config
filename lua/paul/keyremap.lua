@@ -17,8 +17,13 @@ vim.keymap.set("n", "<leader>n", ":w<CR>:bnext<CR>")
 vim.keymap.set("i", "<C-l>", "<right>")
 vim.keymap.set("i", "<C-h>", "<left>")
 
+vim.keymap.set("n", "<C-o>", "<C-o>zz", {noremap = true})
+
 vim.keymap.set("n", "a", "A", {noremap = true})
 vim.keymap.set("n", "A", "a", {noremap = true})
+
+vim.keymap.set("n", "n", "nzz", {noremap = true})
+vim.keymap.set("n", "N", "Nzz", {noremap = true})
 
 vim.keymap.set("n", "v", "V", {noremap = true})
 vim.keymap.set("n", "V", "v", {noremap = true})
@@ -39,5 +44,5 @@ vim.cmd('vnoremap <C-k> 15kzz')
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
-vim.keymap.set('x', 's', [[:s/\v(((^\s*).*\S\s)(\w+\s?[(].*[)].*);)/\2\4 {\r\r\3}\r<left><left><left><left><left><left><left><left><left><left><left><left><left>]], {noremap = true})
+vim.keymap.set('x', 'S', [[:s/\v(((^\s*).*\S\s)(\w+.*\s?[(].*[)].*);)/\2\4 {\r\r\3}\r<left><left><left><left><left><left><left><left><left><left><left><left><left>]], {noremap = true})
 

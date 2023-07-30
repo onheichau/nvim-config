@@ -48,6 +48,24 @@ lspconfig["cssls"].setup({
   on_attach = on_attach,
 })
 
+-- configure javascript server
+lspconfig["bashls"].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+})
+
+-- configure javascript server
+lspconfig["tsserver"].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+})
+
+-- configure javascript server
+lspconfig["cssmodules_ls"].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+})
+
 -- clangd
 lspconfig["clangd"].setup({
 	capabilities = capabilities,

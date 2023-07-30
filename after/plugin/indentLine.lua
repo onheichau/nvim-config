@@ -1,5 +1,4 @@
 vim.opt.list = true
-vim.opt.listchars:append "eol:↴"
 
 
 require("indent_blankline").setup {
@@ -15,5 +14,7 @@ vim.cmd([[
   highlight IndentBlanklineContextChar guifg=#808080 gui=nocombine
   highlight IndentBlanklineSpaceChar guifg=#808080 gui=nocombine
   highlight IndentBlanklineSpaceCharBlankline guifg=#808080 gui=nocombine
+  highlight SignColumn guibg=NONE ctermbg=NONE
+  highlight NormalFloat guibg=NONE ctermbg=NONE
+  highlight CursorLineNr guibg=NONE ctermbg=NONE
 ]])
-

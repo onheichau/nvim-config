@@ -6,24 +6,18 @@ dap.adapters.lldb = {
   name = 'lldb'
 }
 
-dap.defaults.fallback.external_terminal = {
-  command = '/usr/bin/zsh',
-  args = {'-e'};
-}
-
 dap.configurations.cpp = {
   {
-    name = 'Launch',
+    name = 'mac db',
     type = 'lldb',
     request = 'launch',
-    program = 'a.out',
     --program = function()
     --  return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
     --end,
+    program = 'a.out',
     cwd = '${workspaceFolder}',
     stopOnEntry = false,
-    --args = {},
-    args = {"Stations1.txt", "Stations2.txt", "CustomerOrders.txt"},
+    args = {"input.txt", "encoded.dat.txt", "K"},
   },
 }
 
@@ -39,8 +33,8 @@ vim.keymap.set('n', '<F11>', function() dap.step_into() vim.cmd('normal! zz') en
 vim.keymap.set('n', '<F12>', function() dap.step_out() vim.cmd('normal! zz') end)
 vim.keymap.set('n', '<Leader>r', function() dap.step_back() vim.cmd('normal! zz') end)
 vim.keymap.set('n', '<Leader>b', function() dap.toggle_breakpoint() end)
-vim.keymap.set('n', '<F2>', function() dap.up() end)
-vim.keymap.set('n', '<F1>', function() dap.down() end)
+vim.keymap.set('n', '<F1>', function() dap.down()  dap.focus_frame()end)
+vim.keymap.set('n', '<F2>', function() dap.up()  dap.focus_frame()end)
 
 local dapui = require("dapui")
 
