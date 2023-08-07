@@ -18,10 +18,11 @@ local on_attach = function(client, bufnr)
 	local opts = { noremap = true, silent = true, buffer = bufnr }
 
 	-- set keybinds
-  keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
+	keymap.set("n", "gd", function()
+		vim.lsp.buf.definition()
+	end, opts)
 	keymap.set("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts) -- got to declaration
 	keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts) -- go to implementation
-
 end
 
 -- used to enable autocompletion (assign to every lsp server config)
@@ -36,41 +37,47 @@ for type, icon in pairs(signs) do
 end
 
 -- configure emmet language server
-lspconfig["emmet_ls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-  filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
-})
+-- lspconfig["emmet_ls"].setup({
+--   capabilities = capabilities,
+--   on_attach = on_attach,
+--   filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
+-- })
 
 -- configure css server
 lspconfig["cssls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
+	capabilities = capabilities,
+	on_attach = on_attach,
 })
 
 -- configure javascript server
 lspconfig["bashls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
+
+-- configure javascript server
+lspconfig["tailwindcss"].setup({
+	capabilities = capabilities,
+	on_attach = on_attach,
 })
 
 -- configure javascript server
 lspconfig["tsserver"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
+	capabilities = capabilities,
+	on_attach = on_attach,
 })
 
 -- configure javascript server
 lspconfig["cssmodules_ls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
+	capabilities = capabilities,
+	on_attach = on_attach,
 })
 
 -- clangd
 lspconfig["clangd"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
-	cmd = { "clangd" ,"--header-insertion=never" },
+	cmd = { "clangd", "--header-insertion=never" },
 })
 
 -- sqlls
