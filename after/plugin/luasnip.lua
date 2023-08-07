@@ -68,6 +68,8 @@ local c = ls.choice_node
 
 local d = ls.dynamic_node
 
+local rep = require("luasnip.extras").rep -- for mirroring input
+
 local snippets = {}
 
 -- TODO: Document what I've learned about lambda
@@ -142,28 +144,34 @@ end
 ls.add_snippets("all", {
 
 	s("ncomp", {
-		-- Using the function_node to dynamically insert the filename.
+		-- jsx ComponentName
 		t("const "),
 		f(get_filename_without_ext, {}),
 		t({
 			" = props => {",
 			"\treturn (",
-			"\t\t<div>",
-			"\t\t\t",
+			"\t\t<",
 		}),
-		i(0), -- This is the final cursor position, between the <div> tags.
+		i(1, { "div" }),
+		t({ ">", "\t\t\t" }),
+		i(0),
+		t({ "" }),
 		t({
 			"",
-			"\t\t</div>",
+			"\t\t</",
+		}),
+		rep(1),
+		t({
+			">",
 			"\t);",
 			"};",
 			"",
 			"export default ",
 		}),
-		-- Using the function_node again to dynamically insert the filename at the end.
 		f(get_filename_without_ext, {}),
 	}),
 	s("arrow", {
+		-- arrow function
 		t("const "),
 		i(1),
 		t("  = "),
@@ -174,9 +182,18 @@ ls.add_snippets("all", {
 		i(0),
 		t({ "", "}" }),
 	}),
-	-- s("safeguard", {
-	--
-	-- }),
+	s("safeguard", {
+		-- compilation safeguard
+		t("#ifndef "),
+		i(1),
+		t({ "", "#define " }),
+		rep(1),
+		t({ "", "", "" }),
+		i(0),
+		t({ "", "", "" }),
+		t("#endif //!"),
+		rep(1),
+	}),
 	-- s(), next snippet goes here
 	-- s(), next snippet goes here
 	-- s(), next snippet goes here
