@@ -68,7 +68,7 @@ lspconfig["tsserver"].setup({
 })
 
 -- configure javascript server
-lspconfig["cssmodules_ls"].setup({
+lspconfig["eslint"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
 })
@@ -81,7 +81,7 @@ lspconfig["clangd"].setup({
 })
 
 -- sqlls
-lspconfig["sqlls"].setup({
+lspconfig["vimls"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
 })

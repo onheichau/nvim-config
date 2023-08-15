@@ -36,12 +36,6 @@ local fmt = require("luasnip.extras.fmt").fmt
 --  Useful for dynamic nodes and choice nodes
 local snippet_from_nodes = ls.sn
 
--- This is the simplest node.
---  Creates a new text node. Places cursor after node by default.
---  t { "this will be inserted" }
---
---  Multiple lines are by passing a table of strings.
---  t { "line 1", "line 2" }
 local t = ls.text_node
 
 -- Insert Node
@@ -70,9 +64,6 @@ local d = ls.dynamic_node
 
 local rep = require("luasnip.extras").rep -- for mirroring input
 
-local snippets = {}
-
--- TODO: Document what I've learned about lambda
 local l = require("luasnip.extras").lambda
 
 local events = require("luasnip.util.events")
@@ -170,7 +161,10 @@ ls.add_snippets("all", {
 		}),
 		f(get_filename_without_ext, {}),
 	}),
-	s("arrow", {
+	s({
+		trig = "arrow",
+		filetype = { "js", "jsx", "tsx" },
+	}, {
 		-- arrow function
 		t("const "),
 		i(1),
@@ -182,19 +176,72 @@ ls.add_snippets("all", {
 		i(0),
 		t({ "", "}" }),
 	}),
-	s("safeguard", {
+	s({
+		trig = "#safguard",
+		filetype = { "cpp", "c" },
+	}, {
 		-- compilation safeguard
 		t("#ifndef "),
-		i(1),
+		i(1, { get_filename_without_ext() .. "_H__" }),
 		t({ "", "#define " }),
 		rep(1),
-		t({ "", "", "" }),
+		t({ "", "", "namespace {", "\t" }),
 		i(0),
-		t({ "", "", "" }),
+		t({ "", "}", "", "" }),
 		t("#endif //!"),
 		rep(1),
 	}),
-	-- s(), next snippet goes here
+	s({
+		trig = "dbms",
+		filetype = "sql",
+	}, { t("DBMS_OUTPUT.PUT_LINE("), i(0), t(");") }),
+	s("create", {
+		t("CREATE OR REPLACE PROCEDURE "),
+		i(1, { "procedure name" }),
+		t({ " AS", "BEGIN", "\t" }),
+		i(0, "Your context"),
+		t({ "", "END;", "/" }),
+	}),
+	s({
+		trig = "begin",
+		filetype = "sql",
+	}, {
+		t({ "BEGIN", "\t" }),
+		i(0, "Your context"),
+		t({ "", "END;", "/" }),
+	}),
+	s({
+		trig = "if",
+		filetype = "sql",
+	}, {
+		t("IF "),
+		i(1, { "condition" }),
+		t({ " THEN", "\t" }),
+		i(0, { "execution" }),
+		t({ "", "END IF;" }),
+	}),
+	s({
+		trig = "for",
+		filetype = "sql",
+	}, {
+		t("FOR "),
+		i(1, { "it" }),
+		t({ " IN " }),
+		i(2, { "1..n" }),
+		t({ "", "\tLOOP", "\t\t" }),
+		i(0, { "execution" }),
+		t({ "", "\tEND LOOP;" }),
+	}),
+	s({
+		trig = "exception",
+		filetype = "sql",
+	}, {
+		t("EXCEPTION WHEN OTHERS THEN", "\t"),
+	}),
+	s("rlchar", {
+		t("normal $R"),
+		i(0, { "replacing_text_goes_here" }),
+	}),
 	-- s(), next snippet goes here
 	-- s(), next snippet goes here
 }) -- end of add_snippets

@@ -45,6 +45,10 @@ vim.cmd("vnoremap <C-k> 15kzz")
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
+-- command line mode keymap sugar
+vim.keymap.set("v", "q:", "q:a")
+vim.keymap.set("n", "q:", "q:a")
+
 -- class name inserter
 vim.keymap.set(
 	"x",

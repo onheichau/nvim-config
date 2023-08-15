@@ -7,14 +7,14 @@ return require("packer").startup(function(use)
 	-- Packer can manage itself
 	use("wbthomason/packer.nvim")
 
-  use ("tjdevries/colorbuddy.nvim")
+	use("tjdevries/colorbuddy.nvim")
 
 	-- Color theme
 	use({ "ellisonleao/gruvbox.nvim" })
-  use {
-    'svrana/neosolarized.nvim',
-    requires = { 'tjdevries/colorbuddy.nvim' }
-  }
+	use({
+		"svrana/neosolarized.nvim",
+		requires = { "tjdevries/colorbuddy.nvim" },
+	})
 
 	-- telescope
 	use({
@@ -62,25 +62,35 @@ return require("packer").startup(function(use)
 	-- statusline
 	use("nvim-lualine/lualine.nvim")
 
-  -- git diff view
-  use("sindrets/diffview.nvim")
+	-- git diff view
+	use("sindrets/diffview.nvim")
 
-  -- debugger integration
-  use ("mfussenegger/nvim-dap")
-  use { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} }
-  use ("theHamsta/nvim-dap-virtual-text")
+	-- debugger integration
+	use("mfussenegger/nvim-dap")
+	use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } })
+	use("theHamsta/nvim-dap-virtual-text")
 
-  -- UI
-  use "lukas-reineke/indent-blankline.nvim"
+	-- UI
+	use("lukas-reineke/indent-blankline.nvim")
 
-  -- buffer tag on the top
-  use {'akinsho/bufferline.nvim', tag = "*", requires = 'nvim-tree/nvim-web-devicons'}
+	-- buffer tag on the top
+	use({ "akinsho/bufferline.nvim", tag = "*", requires = "nvim-tree/nvim-web-devicons" })
 
-  --Commenter
-  use {
-      'numToStr/Comment.nvim',
-      config = function()
-          require('Comment').setup()
-      end
-  }
+	--Commenter
+	use({
+		"numToStr/Comment.nvim",
+		config = function()
+			require("Comment").setup()
+		end,
+	})
+	-- chat gpt plugin
+	use({
+		"jackMort/ChatGPT.nvim",
+		commit = "2107f7037c775bf0b9bff9015eed68929fcf493e",
+		requires = {
+			"MunifTanjim/nui.nvim",
+			"nvim-lua/plenary.nvim",
+			"nvim-telescope/telescope.nvim",
+		},
+	})
 end)

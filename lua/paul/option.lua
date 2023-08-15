@@ -10,7 +10,6 @@ vim.opt.shiftwidth = 2 -- 2 spaces for indent width
 vim.opt.expandtab = true -- expand tab to spaces
 vim.opt.autoindent = true -- copy indent from current line when starting new on
 
-
 -- line wrapping
 vim.opt.wrap = false -- disable line wrapping
 
@@ -41,7 +40,9 @@ vim.opt.clipboard:append("unnamedplus") -- use system clipboard as default regis
 vim.opt.splitright = true -- split vertical window to the right
 vim.opt.splitbelow = true -- split horizontal window to the bottom
 
+-- auto change directory
+vim.cmd("set autochdir")
+
 vim.opt.iskeyword:append("-") -- consider string-string as whole word
-vim.opt.iskeyword:append(".") -- consider string.string as whole word
 
 vim.opt.incsearch = true
