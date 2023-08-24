@@ -10,6 +10,9 @@ vim.api.nvim_create_autocmd("FileType", {
 	pattern = "netrw",
 	callback = function()
 		vim.cmd("set number rnu")
+		vim.cmd("3")
+		vim.cmd("norm 04lV$y")
+		vim.cmd("cd " .. vim.fn.getreg('"'))
 		vim.cmd("silent! normal g;")
 	end,
 })
