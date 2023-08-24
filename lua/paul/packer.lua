@@ -83,14 +83,17 @@ return require("packer").startup(function(use)
 			require("Comment").setup()
 		end,
 	})
+
+	use("MunifTanjim/nui.nvim")
+
 	-- chat gpt plugin
-	use({
-		"jackMort/ChatGPT.nvim",
-		commit = "2107f7037c775bf0b9bff9015eed68929fcf493e",
-		requires = {
-			"MunifTanjim/nui.nvim",
-			"nvim-lua/plenary.nvim",
-			"nvim-telescope/telescope.nvim",
-		},
-	})
+	-- use({
+	-- 	"jackMort/ChatGPT.nvim",
+	-- 	commit = "2107f7037c775bf0b9bff9015eed68929fcf493e",
+	-- 	requires = {
+	-- 		"MunifTanjim/nui.nvim",
+	-- 		"nvim-lua/plenary.nvim",
+	-- 		"nvim-telescope/telescope.nvim",
+	-- 	},
+	-- })
 end)

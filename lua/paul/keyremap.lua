@@ -2,20 +2,19 @@ vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>e", ":Ex<CR>")
 vim.keymap.set("n", "<", ":bp<CR>")
 vim.keymap.set("n", ">", ":bn<CR>")
-vim.keymap.set("n", "<Tab>", "<C-w><C-w>")
+--vim.keymap.set("n", "<Tab>", "2<C-w>", { noremap = true })
 vim.keymap.set("n", "<leader>s", 'yiw:%s/<C-r>"//g<Left><Left>', { noremap = true })
 vim.keymap.set("n", "<leader>=", "=ap", { noremap = true })
-vim.keymap.set("n", "<leader><Tab>", ":vsplit<Enter><C-w><C-w>", { noremap = true })
 vim.keymap.set("n", "<leader>g", ":DiffviewOpen<CR>", { noremap = true })
 vim.keymap.set("n", "<leader>G", ":DiffviewClose<CR>", { noremap = true })
-vim.keymap.set("n", "<c-n>", ":noh<CR>", { noremap = true })
-
+vim.keymap.set("n", "<C-n>", "<cmd>noh<CR>")
+--
 vim.keymap.set("i", "<ESC>", "<ESC>l")
 vim.keymap.set("n", "<leader>n", ":w<CR>:bnext<CR>")
 
 vim.keymap.set("i", "<C-l>", "<right>")
 vim.keymap.set("i", "<C-h>", "<left>")
-
+--
 vim.keymap.set("n", "<C-o>", "<C-o>zz", { noremap = true })
 
 vim.keymap.set("n", "G", "Gzz", { noremap = true })
@@ -58,8 +57,7 @@ vim.keymap.set(
 )
 
 -- default compile and execute
-vim.keymap.set(
-	"n",
-	"<leader>c",
-	":w<CR>:!g++ -std=c++17 -Wall -g -fdiagnostics-color=always *.cpp && ./a.out > output.txt<CR> :e ./output.txt<CR>"
-)
+vim.keymap.set("n", "<leader>c", function()
+	vim.cmd("!g++ -std=c++17 -Wall -g -fdiagnostics-color=always *.cpp")
+	vim.cmd("! ./a.out")
+end)

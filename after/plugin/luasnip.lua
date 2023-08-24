@@ -163,12 +163,11 @@ ls.add_snippets("all", {
 	}),
 	s({
 		trig = "arrow",
-		filetype = { "js", "jsx", "tsx" },
 	}, {
 		-- arrow function
 		t("const "),
 		i(1),
-		t("  = "),
+		t(" = "),
 		t("("),
 		i(2),
 		t(")"),
@@ -177,8 +176,15 @@ ls.add_snippets("all", {
 		t({ "", "}" }),
 	}),
 	s({
-		trig = "#safguard",
-		filetype = { "cpp", "c" },
+		trig = "lambda",
+	}, {
+		-- compilation safeguard
+		t("[](){"),
+		i(0),
+		t(";}"),
+	}),
+	s({
+		trig = "#safeguard",
 	}, {
 		-- compilation safeguard
 		t("#ifndef "),
