@@ -7,7 +7,7 @@ vim.keymap.set("n", "<leader>s", 'yiw:%s/<C-r>"//g<Left><Left>', { noremap = tru
 vim.keymap.set("n", "<leader>=", "=ap", { noremap = true })
 vim.keymap.set("n", "<leader>g", ":DiffviewOpen<CR>", { noremap = true })
 vim.keymap.set("n", "<leader>G", ":DiffviewClose<CR>", { noremap = true })
-vim.keymap.set("n", "<C-n>", "<cmd>noh<CR>")
+vim.keymap.set("n", "<leader>n", "<cmd>noh<CR>")
 --
 vim.keymap.set("i", "<ESC>", "<ESC>l")
 vim.keymap.set("n", "<leader>n", ":w<CR>:bnext<CR>")

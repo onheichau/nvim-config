@@ -68,10 +68,10 @@ lspconfig["tsserver"].setup({
 })
 
 -- configure javascript server
-lspconfig["eslint"].setup({
-	capabilities = capabilities,
-	on_attach = on_attach,
-})
+-- lspconfig["eslint"].setup({
+-- 	capabilities = capabilities,
+-- 	on_attach = on_attach,
+-- })
 
 -- clangd
 lspconfig["clangd"].setup({

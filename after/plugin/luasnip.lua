@@ -176,6 +176,30 @@ ls.add_snippets("all", {
 		t({ "", "}" }),
 	}),
 	s({
+		trig = "reducer",
+	}, {
+		-- useReducer
+		t({
+			"const ACTIONS = {",
+			"\tplaceholder: 'placeholder'",
+			"};",
+			"",
+			"const reducer = (state, action) => {",
+			"\tswitch(action.type) {",
+			"\t\tcase 1:",
+			"\t\t\treturn {",
+			"\t\t\t\t...state,",
+			"\t\t\t\t//more...",
+			"\t\t\t};",
+			"\t\tdefault:",
+			"\t\t\tthrow new Error('unhandled actions!');",
+			"\t}",
+			"};",
+			"",
+			"const [state, dispatch] = useReducer(reducer, {init: 0})",
+		}),
+	}),
+	s({
 		trig = "lambda",
 	}, {
 		-- compilation safeguard
