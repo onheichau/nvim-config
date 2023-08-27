@@ -73,6 +73,9 @@ return require("packer").startup(function(use)
 	-- buffer tag on the top
 	use({ "akinsho/bufferline.nvim", tag = "*", requires = "nvim-tree/nvim-web-devicons" })
 
+	-- git
+	use("tpope/vim-fugitive")
+
 	--Commenter
 	use({
 		"numToStr/Comment.nvim",
