@@ -139,13 +139,13 @@ ls.add_snippets("all", {
 		t("const "),
 		f(get_filename_without_ext, {}),
 		t({
-			" = props => {",
+			" = ({}) => {",
 			"\treturn (",
 			"\t\t<",
 		}),
 		i(1, { "div" }),
 		t({ ">", "\t\t\t" }),
-		i(0),
+		i(0, { "<p>hello</p>" }),
 		t({ "" }),
 		t({
 			"",
