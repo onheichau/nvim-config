@@ -200,6 +200,12 @@ ls.add_snippets("all", {
 		}),
 	}),
 	s({
+		-- bullet point
+		trig = "bullet",
+	}, {
+		t("•"),
+	}),
+	s({
 		trig = "lambda",
 	}, {
 		-- compilation safeguard
