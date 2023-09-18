@@ -57,10 +57,12 @@ vim.keymap.set(
 )
 
 -- default compile and execute
-vim.keymap.set("n", "<leader>c", function()
-	vim.cmd("!g++ -std=c++17 -Wall -g -fdiagnostics-color=always *.cpp")
-	vim.cmd("! ./a.out")
+vim.keymap.set("n", "<leader>r", function()
+	vim.cmd("!python3 %")
 end)
+
+-- vim.cmd("!g++ -std=c++17 -Wall -g -fdiagnostics-color=always *.cpp")
+-- vim.cmd("! ./a.out")
 
 vim.keymap.set("n", "<leader>j", function()
 	vim.cmd("ju")
