@@ -203,7 +203,7 @@ ls.add_snippets("all", {
 		-- bullet point
 		trig = "bullet",
 	}, {
-		t("•"),
+		t("• "),
 	}),
 	s({
 		trig = "lambda",
@@ -218,7 +218,7 @@ ls.add_snippets("all", {
 	}, {
 		-- compilation safeguard
 		t("#ifndef "),
-		i(1, { get_filename_without_ext() .. "_H__" }),
+		i(1, { string.upper(get_filename_without_ext()) .. "_H__" }),
 		t({ "", "#define " }),
 		rep(1),
 		t({ "", "", "namespace {", "\t" }),
@@ -227,6 +227,10 @@ ls.add_snippets("all", {
 		t("#endif //!"),
 		rep(1),
 	}),
+	-- s({trig = "class"}, {
+	--   t({"class"}),
+	--   i()
+	-- }),
 	s({
 		trig = "dbms",
 		filetype = "sql",
