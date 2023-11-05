@@ -68,7 +68,7 @@ return require("packer").startup(function(use)
 	use("theHamsta/nvim-dap-virtual-text")
 
 	-- UI
-	use("lukas-reineke/indent-blankline.nvim")
+	use({ "lukas-reineke/indent-blankline.nvim", commit = "9637670" })
 
 	-- buffer tag on the top
 	use({ "akinsho/bufferline.nvim", tag = "*", requires = "nvim-tree/nvim-web-devicons" })

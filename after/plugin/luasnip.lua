@@ -206,6 +206,44 @@ ls.add_snippets("all", {
 		t("• "),
 	}),
 	s({
+		trig = "\\frac",
+	}, {
+		t("\\frac{"),
+		i(1),
+		t("}{"),
+		i(0),
+		t("}"),
+	}),
+	s({
+		trig = "keymap",
+	}, {
+		t('vim.keymap.set("", "", "")'),
+	}),
+	s({
+		trig = "\\array",
+	}, {
+		t({ "$$", "\\begin{array}{lcl}", "" }),
+		i(0),
+		t(" \\\\"),
+		t({ "", "\\end{array}", "$$" }),
+	}),
+	s({
+		trig = "\\cases",
+	}, {
+		t({ "$$", "\\begin{cases}", "" }),
+		i(0),
+		t(" \\\\"),
+		t({ "", "\\end{cases}", "$$" }),
+	}),
+	s({
+		trig = "\\text",
+	}, {
+		t("\\text{"),
+		i(1),
+		t("} "),
+		i(0),
+	}),
+	s({
 		trig = "lambda",
 	}, {
 		-- compilation safeguard

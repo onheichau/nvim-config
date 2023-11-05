@@ -43,6 +43,19 @@ end
 --   filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
 -- })
 
+-- configure r
+-- lspconfig["r_language_server"].setup({
+-- 	capabilities = capabilities,
+-- 	on_attach = on_attach,
+-- })
+--
+lspconfig.r_language_server.setup({
+	on_attach = on_attach_custom,
+	-- Debounce "textDocument/didChange" notifications because they are slowly
+	-- processed (seen when going through completion list with `<C-N>`)
+	flags = { debounce_text_changes = 150 },
+})
+
 -- configure css server
 lspconfig["cssls"].setup({
 	capabilities = capabilities,

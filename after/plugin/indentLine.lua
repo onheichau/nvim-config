@@ -1,11 +1,10 @@
 vim.opt.list = true
 
-
-require("indent_blankline").setup {
-  show_end_of_line = false,
-  show_first_indent_level = false,
-  show_trailing_blankline_indent = false,
-}
+require("indent_blankline").setup({
+	show_end_of_line = false,
+	show_first_indent_level = false,
+	show_trailing_blankline_indent = false,
+})
 
 vim.cmd("highlight IndentBlanklineChar guifg=#808080 gui=nocombine")
 
