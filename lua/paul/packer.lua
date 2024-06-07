@@ -59,14 +59,6 @@ return require("packer").startup(function(use)
 	-- statusline
 	use("nvim-lualine/lualine.nvim")
 
-	-- git diff view
-	use("sindrets/diffview.nvim")
-
-	-- debugger integration
-	use("mfussenegger/nvim-dap")
-	use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } })
-	use("theHamsta/nvim-dap-virtual-text")
-
 	-- UI
 	use({ "lukas-reineke/indent-blankline.nvim", commit = "9637670" })
 
