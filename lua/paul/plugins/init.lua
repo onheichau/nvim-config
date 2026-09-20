@@ -8,7 +8,16 @@ return {
       vim.cmd.colorscheme("gruvbox")
     end,
   },
-  { "nvim-tree/nvim-web-devicons", opts = {} },
+  {
+    "nvim-tree/nvim-web-devicons",
+    opts = {
+      override = {
+        -- The upstream TeX glyph requires newer Nerd Fonts than the MesloLGS
+        -- profile used by iTerm. Keep the file mark readable in every terminal.
+        tex = { icon = "TeX", color = "#3D6117", cterm_color = "22", name = "Tex" },
+      },
+    },
+  },
   {
     "nvim-lualine/lualine.nvim",
     opts = {
