@@ -37,6 +37,20 @@ local function run()
   vim.g.latex_live_delay = 60
   local project =
     assert(vim.env.NVIM_TEST_PROJECT, "NVIM_TEST_PROJECT must point to a disposable assignment copy")
+  local latex = require("paul.latex")
+  local fresh_project = vim.fn.tempname()
+  vim.fn.mkdir(fresh_project, "p")
+  local fresh_source = fresh_project .. "/main.tex"
+  vim.fn.writefile({}, fresh_source)
+  vim.cmd.edit(vim.fn.fnameescape(fresh_source))
+  latex.toggle()
+  check(vim.b.latex_live, "live mode did not start for a new empty file")
+  check(read(fresh_source):find("\\documentclass", 1, true), "starter document was not created")
+  wait_for(function()
+    return vim.fn.filereadable(fresh_project .. "/main.pdf") == 1
+  end, "starter document PDF was not generated")
+  latex.stop()
+  vim.cmd.VimtexStop()
   local source = project .. "/sections/problem1.tex"
   vim.cmd.edit(vim.fn.fnameescape(source))
   local buf = vim.api.nvim_get_current_buf()
@@ -53,7 +67,6 @@ local function run()
   wait_for(function()
     return #vim.lsp.get_clients({ bufnr = buf, name = "texlab" }) == 1
   end, "Texlab did not attach")
-  local latex = require("paul.latex")
   latex.toggle()
   check(vim.b.latex_live, "live mode did not start")
   wait_for(function()

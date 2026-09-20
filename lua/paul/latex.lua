@@ -1,6 +1,25 @@
 local M = {}
 local timers, disk_versions = {}, {}
 
+local starter_document = {
+  "\\documentclass[11pt]{article}",
+  "\\usepackage[T1]{fontenc}",
+  "\\usepackage{amsmath,amssymb}",
+  "\\usepackage[margin=1in]{geometry}",
+  "\\usepackage{hyperref}",
+  "",
+  "\\title{Untitled}",
+  "\\author{Your name}",
+  "\\date{\\today}",
+  "",
+  "\\begin{document}",
+  "\\maketitle",
+  "",
+  "Start writing here.",
+  "",
+  "\\end{document}",
+}
+
 local function disk_version(buf)
   local stat = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
   return stat and table.concat({ stat.mtime.sec, stat.mtime.nsec, stat.size }, ":") or "missing"
@@ -31,6 +50,29 @@ local function writable(buf)
     and not vim.bo[buf].readonly
     and vim.api.nvim_buf_get_name(buf) ~= ""
     and vim.bo[buf].filetype == "tex"
+end
+
+local function empty(buf)
+  for _, line in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, false)) do
+    if line:find("%S") then
+      return false
+    end
+  end
+  return true
+end
+
+local function create_starter(buf)
+  if not empty(buf) then
+    return false
+  end
+
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, starter_document)
+  vim.api.nvim_win_set_cursor(0, { 14, 0 })
+  vim.cmd.update()
+  -- VimTeX inspected the empty buffer during FileType. Re-detect the main file
+  -- now that it contains a complete document.
+  vim.cmd("silent VimtexReloadState")
+  return true
 end
 
 function M.save(buf)
@@ -90,6 +132,7 @@ function M.toggle()
     vim.notify("latexmk is missing. See the README's LaTeX installation steps.", vim.log.levels.ERROR)
     return
   end
+  local created = create_starter(buf)
   -- Regular :update preserves normal write hooks and file-conflict protection.
   vim.cmd.update()
   if vim.fn.eval("b:vimtex.compiler.is_running() ? 1 : 0") == 0 then
@@ -101,7 +144,14 @@ function M.toggle()
   end
   vim.b[buf].latex_live = true
   disk_versions[buf] = disk_version(buf)
-  vim.notify("LaTeX live on: this buffer saves after an 800 ms typing pause.")
+  if created then
+    vim.notify("Created a starter document. LaTeX live is on; start typing in the document body.")
+    if #vim.api.nvim_list_uis() > 0 then
+      vim.cmd.startinsert()
+    end
+  else
+    vim.notify("LaTeX live on: this buffer saves after an 800 ms typing pause.")
+  end
 end
 
 function M.setup()

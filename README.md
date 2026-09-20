@@ -16,8 +16,9 @@ nvim main.tex
 
 - **Space l c** starts/stops the continuous compiler. Save with `:w` to update the PDF.
 - **Space l l** enables live editing for the current `.tex` buffer: after an **800 ms
-  pause**, the buffer is saved and `latexmk` rebuilds the PDF in Skim. The statusline
-  says `LaTeX LIVE`. Press again to disable auto-save; manual saves still compile.
+  pause**, the buffer is saved and `latexmk` rebuilds the PDF in Skim. On a new, empty
+  file it first creates a minimal article and places the cursor in the document body.
+  The statusline says `LaTeX LIVE`. Press again to disable auto-save; manual saves still compile.
 - **Space l v** opens the PDF and jumps to the current source position.
 - **Space l s** disables auto-save for this buffer and stops its project's compiler.
 - **Space l e** shows compilation errors; **Space l o** opens compiler output.
