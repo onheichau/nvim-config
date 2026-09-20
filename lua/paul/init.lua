@@ -1,4 +1,4 @@
-require("paul/keyremap")
-require("paul/option")
-require("paul/packer")
-require("paul/autocmd")
+require("paul.option")
+require("paul.keyremap")
+require("paul.autocmd")
+require("paul.lazy")
