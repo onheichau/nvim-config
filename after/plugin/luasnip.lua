@@ -129,37 +129,22 @@ local function get_filename_without_ext()
 	if filename == "" then
 		return "ComponentName" -- Default name in case it's an unnamed buffer.
 	end
-	return filename
+	return filename.upper(filename.sub(filename, 1, 1)) .. filename.sub(filename, 2)
 end
 
 ls.add_snippets("all", {
 
 	s("ncomp", {
 		-- jsx ComponentName
-		t("const "),
+		t("export default function "),
 		f(get_filename_without_ext, {}),
+		t({ "({}) {", "\treturn (", "\t\t <div>" }),
+		i(0),
 		t({
-			" = ({}) => {",
-			"\treturn (",
-			"\t\t<",
+			"</div>",
+			"\t)",
+			"}",
 		}),
-		i(1, { "div" }),
-		t({ ">", "\t\t\t" }),
-		i(0, { "<p>hello</p>" }),
-		t({ "" }),
-		t({
-			"",
-			"\t\t</",
-		}),
-		rep(1),
-		t({
-			">",
-			"\t);",
-			"};",
-			"",
-			"export default ",
-		}),
-		f(get_filename_without_ext, {}),
 	}),
 	s({
 		trig = "arrow",
@@ -250,6 +235,13 @@ ls.add_snippets("all", {
 		t("[](){"),
 		i(0),
 		t(";}"),
+	}),
+	s({
+		trig = "dummy_request",
+	}, {
+		t({ 'std::string request = "GET / HTTP/1.1\\r\\n"' }),
+		t({ "", '"Host: example.com\\r\\n"' }),
+		t({ "", '"Connection: close\\r\\n\\r\\n";' }),
 	}),
 	s({
 		trig = "#safeguard",

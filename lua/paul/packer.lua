@@ -33,7 +33,7 @@ return require("packer").startup(function(use)
 
 	-- auto closing
 	use("windwp/nvim-autopairs") -- autoclose parens, brackets, quotes, etc...
-	use({ "windwp/nvim-ts-autotag", after = "nvim-treesitter" }) -- autoclose tags
+	use({ "windwp/nvim-ts-autotag" }) -- auto completion on html tag
 
 	-- autocompletion
 	use("hrsh7th/nvim-cmp") -- completion plugin
@@ -67,6 +67,9 @@ return require("packer").startup(function(use)
 
 	-- git
 	use("tpope/vim-fugitive")
+
+	-- Tabularize
+	use("godlygeek/tabular")
 
 	--Commenter
 	use({

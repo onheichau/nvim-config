@@ -75,22 +75,16 @@ lspconfig["tailwindcss"].setup({
 })
 
 -- configure javascript server
-lspconfig["tsserver"].setup({
-	capabilities = capabilities,
-	on_attach = on_attach,
-})
-
--- configure javascript server
 lspconfig["pyright"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
 })
 
 -- configure javascript server
--- lspconfig["eslint"].setup({
--- 	capabilities = capabilities,
--- 	on_attach = on_attach,
--- })
+lspconfig["ts_ls"].setup({
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
 
 -- clangd
 lspconfig["clangd"].setup({

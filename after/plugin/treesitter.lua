@@ -1,11 +1,17 @@
 require("nvim-treesitter.configs").setup({
-	-- auto tag
-	autotag = {
-		enable = true,
-		enable_close_on_slash = false,
-	},
 	-- A list of parser names, or "all" (the four listed parsers should always be installed)
-	ensure_installed = { "lua", "vim", "sql", "vimdoc", "html", "javascript", "css", "cpp" },
+	ensure_installed = {
+		"lua",
+		"vim",
+		"sql",
+		"vimdoc",
+		"html",
+		"javascript",
+		"css",
+		"cpp",
+		"markdown",
+		"markdown_inline",
+	},
 
 	-- Install parsers synchronously (only applied to `ensure_installed`)
 	sync_install = true,

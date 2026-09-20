@@ -42,6 +42,7 @@ vim.opt.splitbelow = true -- split horizontal window to the bottom
 
 -- auto change directory
 vim.cmd("set autochdir")
+vim.cmd("setlocal spell spelllang=en_us")
 
 vim.opt.iskeyword:append("-") -- consider string-string as whole word
 
