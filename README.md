@@ -14,7 +14,8 @@ cd ~/Documents/my-assignment
 nvim main.tex
 ```
 
-- **Space l c** starts/stops the continuous compiler. Save with `:w` to update the PDF.
+- Every `:w` starts the continuous compiler when needed and rebuilds the PDF.
+- **Space l c** manually starts/stops the continuous compiler.
 - **Space l l** enables live editing for the current `.tex` buffer: after an **800 ms
   pause**, the buffer is saved and `latexmk` rebuilds the PDF in Skim. On a new, empty
   file it first creates a minimal article and places the cursor in the document body.

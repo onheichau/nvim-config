@@ -67,6 +67,13 @@ local function run()
   wait_for(function()
     return #vim.lsp.get_clients({ bufnr = buf, name = "texlab" }) == 1
   end, "Texlab did not attach")
+  vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "% compile-on-write test" })
+  vim.cmd.update()
+  wait_for(function()
+    return vim.fn.eval("b:vimtex.compiler.is_running() ? 1 : 0") == 1
+  end, "writing a LaTeX file did not start the compiler")
+  check(not vim.b.latex_live, "compile-on-write unexpectedly enabled live auto-save")
+  vim.cmd.VimtexStop()
   latex.toggle()
   check(vim.b.latex_live, "live mode did not start")
   wait_for(function()
@@ -124,7 +131,7 @@ local function run()
   )
   check(vim.v.errmsg == "", "Neovim error during integration test: " .. vim.v.errmsg)
   print(
-    "PASS: startup, plugins, personal mappings, Texlab, multi-file root, PDF + bibliography + SyncTeX, live rebuild, external edits, read-only protection, timer cancellation, snippets"
+    "PASS: startup, plugins, personal mappings, Texlab, multi-file root, compile on write, PDF + bibliography + SyncTeX, live rebuild, external edits, read-only protection, timer cancellation, snippets"
   )
 end
 local ok, err = xpcall(run, debug.traceback)

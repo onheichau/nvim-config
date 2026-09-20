@@ -68,11 +68,34 @@ local function create_starter(buf)
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, starter_document)
   vim.api.nvim_win_set_cursor(0, { 14, 0 })
-  vim.cmd.update()
+  vim.b[buf].latex_starter_pending = true
+  local written, err = pcall(vim.cmd.update)
+  vim.b[buf].latex_starter_pending = false
+  if not written then
+    error(err)
+  end
   -- VimTeX inspected the empty buffer during FileType. Re-detect the main file
   -- now that it contains a complete document.
   vim.cmd("silent VimtexReloadState")
   return true
+end
+
+function M.compile(buf)
+  buf = buf or vim.api.nvim_get_current_buf()
+  if not writable(buf) or not vim.b[buf].vimtex or vim.fn.executable("latexmk") == 0 then
+    return false
+  end
+
+  return vim.api.nvim_buf_call(buf, function()
+    local ok, compileable = pcall(vim.fn.eval, "b:vimtex.is_compileable() ? 1 : 0")
+    if not ok or compileable == 0 then
+      return false
+    end
+    if vim.fn.eval("b:vimtex.compiler.is_running() ? 1 : 0") == 0 then
+      vim.fn["vimtex#compiler#start"]()
+    end
+    return vim.fn.eval("b:vimtex.compiler.is_running() ? 1 : 0") == 1
+  end)
 end
 
 function M.save(buf)
@@ -135,10 +158,7 @@ function M.toggle()
   local created = create_starter(buf)
   -- Regular :update preserves normal write hooks and file-conflict protection.
   vim.cmd.update()
-  if vim.fn.eval("b:vimtex.compiler.is_running() ? 1 : 0") == 0 then
-    vim.fn["vimtex#compiler#start"]()
-  end
-  if vim.fn.eval("b:vimtex.compiler.is_running() ? 1 : 0") == 0 then
+  if not M.compile(buf) then
     vim.notify("LaTeX live could not start the compiler. See :VimtexInfo.", vim.log.levels.ERROR)
     return
   end
@@ -172,6 +192,9 @@ function M.setup()
     callback = function(event)
       if vim.b[event.buf].latex_live then
         disk_versions[event.buf] = disk_version(event.buf)
+      end
+      if not vim.b[event.buf].latex_starter_pending then
+        M.compile(event.buf)
       end
     end,
   })
