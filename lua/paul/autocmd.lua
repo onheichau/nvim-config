@@ -1,30 +1,27 @@
+local group = vim.api.nvim_create_augroup("PaulConfig", { clear = true })
 vim.api.nvim_create_autocmd("BufReadPost", {
-	pattern = "*.*",
-	callback = function()
-		vim.cmd("silent! normal g;")
-		vim.cmd("norm zz")
-	end,
+  group = group,
+  callback = function(event)
+    local mark = vim.api.nvim_buf_get_mark(event.buf, '"')
+    if mark[1] > 0 and mark[1] <= vim.api.nvim_buf_line_count(event.buf) then
+      pcall(vim.api.nvim_win_set_cursor, 0, mark)
+    end
+  end,
 })
-
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "netrw",
-	callback = function()
-		vim.cmd("set number rnu")
-		vim.cmd("cd $PWD")
-		vim.cmd("silent! normal g;")
-	end,
+  group = group,
+  pattern = { "text", "markdown", "tex", "plaintex" },
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.linebreak = true
+    vim.opt_local.spell = true
+    -- Soft wrap: don't insert hard breaks into equations while typing.
+    vim.opt_local.textwidth = 0
+  end,
 })
-
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "text",
-	callback = function()
-		vim.cmd("set wrap linebreak textwidth=80")
-	end,
-})
-
-vim.api.nvim_create_autocmd("BufWritePost", {
-	pattern = "*.R",
-	callback = function()
-		vim.cmd("!Rscript -e 'styler::style_file(\"" .. vim.fn.expand("%:p") .. "\")'")
-	end,
+vim.api.nvim_create_autocmd("TextYankPost", {
+  group = group,
+  callback = function()
+    vim.hl.on_yank()
+  end,
 })

@@ -1,49 +1,32 @@
 vim.opt.guicursor = ""
-
---line number
-vim.opt.rnu = true
 vim.opt.number = true
-
--- tab and indentation
-vim.opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
-vim.opt.shiftwidth = 2 -- 2 spaces for indent width
-vim.opt.expandtab = true -- expand tab to spaces
-vim.opt.autoindent = true -- copy indent from current line when starting new on
-
--- line wrapping
-vim.opt.wrap = false -- disable line wrapping
-
--- search settings
-vim.opt.ignorecase = true -- ignore case when searching
-vim.opt.smartcase = true -- if you include mixed case in your search, assumes you want case-sensitive
-
--- cursor line
-vim.opt.cursorline = true -- highlight the current cursor line
-
--- appearance
-
--- turn on termguicolors for nightfly colorscheme to work
--- (have to use iterm2 or any other true color terminal)
-vim.opt.termguicolors = true
-vim.opt.background = "dark" -- colorschemes that can be light or dark will be made dark
-
--- very very very very important
-vim.opt.signcolumn = "yes" -- show sign column so that text doesn't shift
-
--- backspace
-vim.opt.backspace = "indent,eol,start" -- allow backspace on indent, end of line or insert mode start position
-
--- clipboard
-vim.opt.clipboard:append("unnamedplus") -- use system clipboard as default register
-
--- split windows
-vim.opt.splitright = true -- split vertical window to the right
-vim.opt.splitbelow = true -- split horizontal window to the bottom
-
--- auto change directory
-vim.cmd("set autochdir")
-vim.cmd("setlocal spell spelllang=en_us")
-
-vim.opt.iskeyword:append("-") -- consider string-string as whole word
-
+vim.opt.relativenumber = true
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
+vim.opt.autoindent = true
+vim.opt.wrap = false
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
 vim.opt.incsearch = true
+vim.opt.cursorline = true
+vim.opt.termguicolors = true
+vim.opt.background = "dark"
+vim.opt.signcolumn = "yes"
+vim.opt.clipboard:append("unnamedplus")
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+vim.opt.iskeyword:append("-")
+vim.opt.undofile = true
+vim.opt.updatetime = 250
+vim.opt.timeoutlen = 400
+vim.opt.completeopt = { "menu", "menuone", "noselect" }
+vim.opt.spelllang = "en_us"
+-- Stable cwd keeps multi-file LaTeX projects, LSP roots and search consistent.
+vim.opt.autochdir = false
+-- Discover a compact TinyTeX install or BasicTeX/MacTeX in GUI terminals too.
+for _, path in ipairs({ vim.fn.expand("~/Library/TinyTeX/bin/universal-darwin"), "/Library/TeX/texbin" }) do
+  if vim.fn.isdirectory(path) == 1 then
+    vim.env.PATH = path .. ":" .. vim.env.PATH
+  end
+end
