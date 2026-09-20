@@ -17,7 +17,23 @@ return {
           },
         }
       )
-      vim.lsp.config("clangd", { cmd = { "clangd", "--header-insertion=never" } })
+      vim.lsp.config("clangd", {
+        cmd = { "clangd", "--header-insertion=never" },
+        filetypes = { "c", "cpp", "proto" },
+      })
+      vim.lsp.config("tailwindcss", {
+        filetypes = {
+          "css",
+          "html",
+          "javascript",
+          "javascriptreact",
+          "scss",
+          "svelte",
+          "typescript",
+          "typescriptreact",
+          "vue",
+        },
+      })
       vim.lsp.config("texlab", {
         settings = {
           texlab = {

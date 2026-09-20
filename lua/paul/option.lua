@@ -22,6 +22,14 @@ vim.opt.updatetime = 250
 vim.opt.timeoutlen = 400
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.spelllang = "en_us"
+
+-- This config does not use remote plugins. Skip optional provider discovery so
+-- :checkhealth only reports dependencies that are relevant to this setup.
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
+
 -- Stable cwd keeps multi-file LaTeX projects, LSP roots and search consistent.
 vim.opt.autochdir = false
 -- Discover a compact TinyTeX install or BasicTeX/MacTeX in GUI terminals too.
