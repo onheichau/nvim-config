@@ -28,7 +28,8 @@ local function run()
     },
   })
   check(pcall(require, "telescope.builtin"), "Telescope failed to load")
-  check(pcall(require, "luasnip-jsregexp"), "LuaSnip regexp support missing")
+  local regexp_ok, regexp = pcall(require, "luasnip.util.jsregexp")
+  check(regexp_ok and regexp, "LuaSnip regexp support missing")
   check(vim.lsp.config.texlab.settings.texlab.build.onSave == false, "duplicate Texlab builds")
   check(require("conform").get_formatter_info("styler") ~= nil, "R formatter missing")
   -- Disable GUI launching for the repeatable headless test only.

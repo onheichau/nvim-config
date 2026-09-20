@@ -4,6 +4,10 @@ return {
   lazy = false,
   build = ":TSUpdate",
   config = function()
+    -- Packer's start plugins may have cached the legacy top-level module before
+    -- Lazy resets runtime paths during this migration. Reload it from Lazy's
+    -- pinned main-branch checkout.
+    package.loaded["nvim-treesitter"] = nil
     local ts = require("nvim-treesitter")
     ts.setup({})
     if vim.fn.executable("tree-sitter") == 1 then
