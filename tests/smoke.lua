@@ -116,20 +116,74 @@ local function run()
   vim.cmd.VimtexStopAll()
   check(vim.fn.eval("b:vimtex.compiler.is_running() ? 1 : 0") == 0, "compiler did not stop")
   vim.cmd("edit!")
-  -- Personal snippets use the real engine and produce valid LaTeX.
+  -- Personal snippets use the real engine, respect math context, and enter
+  -- their first useful input field.
   vim.cmd.enew()
   vim.bo.filetype = "tex"
   local ls = require("luasnip")
   local snippets = dofile(vim.fn.stdpath("config") .. "/snippets/tex.lua")
-  ls.snip_expand(snippets[1])
+  local function find_snippet(list, trigger)
+    for _, snippet in ipairs(list) do
+      if snippet.trigger == trigger then
+        return snippet
+      end
+    end
+    error("missing snippet: " .. trigger)
+  end
+
+  -- The trailing space lets a headless normal-mode cursor sit immediately
+  -- after the trigger, matching insert-mode behavior.
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "starter " })
+  vim.api.nvim_win_set_cursor(0, { 1, 7 })
+  check(ls.expand(), "course starter trigger did not expand")
   -- LuaSnip probes optional vim-repeat with :silent!, which may set v:errmsg
   -- when vim-repeat is absent even though expansion succeeds.
   vim.v.errmsg = ""
   local expanded = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
+  check(expanded:find("\\title{Course code", 1, true), "course starter title missing")
+  check(expanded:find("\\section*{Problem 1}", 1, true), "course starter body missing")
+  local current = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
+  check(current and current.pos == 1, "course starter did not select course code")
+  ls.unlink_current()
+
+  local prefix = "\\( "
+  for _, case in ipairs({
+    { "sroot", "\\sqrt{}", true },
+    { "frac", "\\frac{}{}", true },
+    { "curly", "\\{\\}", true },
+    { "limit", "\\lim_{x \\to c}", true },
+    { "RR", "\\mathbb{R}" },
+    { "ZZ", "\\mathbb{Z}" },
+    { "QQ", "\\mathbb{Q}" },
+    { "NN", "\\mathbb{N}" },
+    { "CC", "\\mathbb{C}" },
+  }) do
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, { prefix .. case[1] .. "  \\)" })
+    vim.api.nvim_win_set_cursor(0, { 1, #prefix + #case[1] })
+    ls.expand_auto()
+    vim.wait(50)
+    check(vim.api.nvim_get_current_line():find(case[2], 1, true), case[1] .. " snippet malformed")
+    current = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
+    check(current and current.pos == (case[3] and 1 or 0), case[1] .. " snippet cursor misplaced")
+    ls.unlink_current()
+  end
+
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "frac " })
+  vim.api.nvim_win_set_cursor(0, { 1, 4 })
+  ls.expand_auto()
+  vim.wait(50)
+  check(vim.api.nvim_get_current_line() == "frac ", "math snippet expanded in prose")
+
+  vim.cmd.enew()
+  vim.bo.filetype = "tex"
+  ls.snip_expand(find_snippet(snippets, "eq"))
+  expanded = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
   check(
     expanded:find("\\begin{equation}", 1, true) and expanded:find("\\end{equation}", 1, true),
     "environment snippet malformed"
   )
+  -- Each expansion may repeat LuaSnip's harmless optional vim-repeat probe.
+  vim.v.errmsg = ""
   check(vim.v.errmsg == "", "Neovim error during integration test: " .. vim.v.errmsg)
   print(
     "PASS: startup, plugins, personal mappings, Texlab, multi-file root, compile on write, PDF + bibliography + SyncTeX, live rebuild, external edits, read-only protection, timer cancellation, snippets"

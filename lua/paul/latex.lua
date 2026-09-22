@@ -8,13 +8,14 @@ local starter_document = {
   "\\usepackage[margin=1in]{geometry}",
   "\\usepackage{hyperref}",
   "",
-  "\\title{Untitled}",
-  "\\author{Your name}",
+  "\\title{Course code\\\\Assignment 1}",
+  "\\author{Your name\\\\Student ID: Your student ID}",
   "\\date{\\today}",
   "",
   "\\begin{document}",
   "\\maketitle",
   "",
+  "\\section*{Problem 1}",
   "Start writing here.",
   "",
   "\\end{document}",
@@ -67,7 +68,7 @@ local function create_starter(buf)
   end
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, starter_document)
-  vim.api.nvim_win_set_cursor(0, { 14, 0 })
+  vim.api.nvim_win_set_cursor(0, { 15, 0 })
   vim.b[buf].latex_starter_pending = true
   local written, err = pcall(vim.cmd.update)
   vim.b[buf].latex_starter_pending = false
