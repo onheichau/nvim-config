@@ -47,8 +47,9 @@ completion and Ctrl-e closes it.
 
 | Trigger | Expansion |
 | --- | --- |
-| `il` | Inline math `\(…\)` while writing prose |
+| `ii` | Inline math `\(…\)` while writing prose |
 | `mm` | Display math `\[ … \]` while writing prose |
+| `mc` | Display math containing a two-row `cases` environment |
 | `st` | `\sqrt{…}` |
 | `frac` | `\frac{…}{…}` |
 | `pwo` | Power `^{…}`, including directly after a variable |

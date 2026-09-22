@@ -75,7 +75,7 @@ end
 
 local automatic = {
   s({
-    trig = "il",
+    trig = "ii",
     name = "Inline math",
     condition = not_in_math,
     show_condition = not_in_math,
@@ -86,6 +86,26 @@ local automatic = {
     condition = not_in_math,
     show_condition = not_in_math,
   }, fmta("\\[\n  <>\n\\]<>", { i(1), i(0) })),
+  s(
+    {
+      trig = "mc",
+      name = "Display math cases",
+      condition = not_in_math,
+      show_condition = not_in_math,
+    },
+    fmta(
+      [[
+\[
+  <>
+  \begin{cases}
+    <> \\
+    <>
+  \end{cases}
+\]<>
+]],
+      { i(1), i(2), i(3), i(0) }
+    )
+  ),
   math_snippet("st", "Square root", fmta("\\sqrt{<>}<>", { i(1), i(0) })),
   math_snippet("frac", "Fraction", fmta("\\frac{<>}{<>}<>", { i(1), i(2), i(0) })),
   s({
