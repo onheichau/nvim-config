@@ -52,13 +52,15 @@ completion and Ctrl-e closes it.
 | `frac` | `\frac{…}{…}` |
 | `cur` | Escaped set braces `\{…\}` |
 | `abs` / `norm` | Absolute value `\lvert … \rvert` / norm `\lVert … \rVert` |
+| `mbf` | Bold math `\mathbf{…}` |
 | `RR` / `ZZ` / `QQ` / `NN` / `CC` | Real, integer, rational, natural, and complex number sets |
-| `limit` | `\lim_{x \to c}` followed by the expression |
+| `lim` | `\lim_{… \to …}` followed by the expression |
 | `not` / `and` / `or` | `\neg` / `\land` / `\lor` |
 | `implies` / `iff` | `\implies` / `\iff` |
 | `forall` / `exists` | `\forall` / `\exists` |
 | `in` | Set membership `\in` |
 | `mid` | Set-builder separator `\mid` |
+| `cdot` | Dot product `\cdot` |
 | `starter` + **Tab** | Complete course-assignment document in an otherwise empty `.tex` file |
 | `eq` / `sec` / `item` + **Tab** | Numbered equation, labeled section, or list item |
 

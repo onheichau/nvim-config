@@ -161,7 +161,7 @@ local function run()
     { "sroot", "\\sqrt{}", true },
     { "frac", "\\frac{}{}", true },
     { "cur", "\\{\\}", true },
-    { "limit", "\\lim_{x \\to c}", true },
+    { "lim", "\\lim_{ \\to }", true },
     { "RR", "\\mathbb{R}" },
     { "ZZ", "\\mathbb{Z}" },
     { "QQ", "\\mathbb{Q}" },

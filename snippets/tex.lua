@@ -75,7 +75,8 @@ local automatic = {
   math_snippet("cur", "Curly braces", fmta("\\{<>\\}<>", { i(1), i(0) })),
   math_snippet("abs", "Absolute value", fmta("\\lvert <> \\rvert<>", { i(1), i(0) })),
   math_snippet("norm", "Norm", fmta("\\lVert <> \\rVert<>", { i(1), i(0) })),
-  math_snippet("limit", "Limit x to c", fmta("\\lim_{x \\to <>} <>", { i(1, "c"), i(0) })),
+  math_snippet("mbf", "Math bold", fmta("\\mathbf{<>}<>", { i(1), i(0) })),
+  math_snippet("lim", "Limit", fmta("\\lim_{<> \\to <>} <>", { i(1), i(2), i(0) })),
 }
 
 for _, set in ipairs({
@@ -99,6 +100,7 @@ for _, logic in ipairs({
   { "exists", "\\exists", "Existential quantifier" },
   { "in", "\\in", "Set membership" },
   { "mid", "\\mid", "Set-builder separator" },
+  { "cdot", "\\cdot", "Dot product" },
 }) do
   automatic[#automatic + 1] = math_snippet(logic[1], logic[3], fmta(logic[2] .. " <>", { i(0) }))
 end
