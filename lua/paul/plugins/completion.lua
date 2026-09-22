@@ -3,10 +3,21 @@ return {
     "L3MON4D3/LuaSnip",
     version = "v2.*",
     build = "make install_jsregexp",
-    dependencies = { "rafamadriz/friendly-snippets" },
+    dependencies = {
+      "rafamadriz/friendly-snippets",
+      "iurimateus/luasnip-latex-snippets.nvim",
+    },
     config = function()
       local ls = require("luasnip")
-      ls.config.setup({ history = true, update_events = "TextChanged,TextChangedI" })
+      ls.config.setup({
+        history = true,
+        update_events = "TextChanged,TextChangedI",
+        enable_autosnippets = true,
+      })
+      require("luasnip-latex-snippets").setup({
+        use_treesitter = false,
+        allow_on_markdown = false,
+      })
       require("luasnip.loaders.from_vscode").lazy_load()
       require("luasnip.loaders.from_lua").lazy_load({ paths = { vim.fn.stdpath("config") .. "/snippets" } })
       require("paul.snippets")
