@@ -95,6 +95,7 @@ for _, logic in ipairs({
   { "iff", "\\iff", "Logical equivalence" },
   { "forall", "\\forall", "Universal quantifier" },
   { "exists", "\\exists", "Existential quantifier" },
+  { "in", "\\in", "Set membership" },
 }) do
   automatic[#automatic + 1] = math_snippet(logic[1], logic[3], fmta(logic[2] .. " <>", { i(0) }))
 end

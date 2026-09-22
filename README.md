@@ -56,6 +56,7 @@ completion and Ctrl-e closes it.
 | `not` / `and` / `or` | `\neg` / `\land` / `\lor` |
 | `implies` / `iff` | `\implies` / `\iff` |
 | `forall` / `exists` | `\forall` / `\exists` |
+| `in` | Set membership `\in` |
 | `starter` + **Tab** | Complete course-assignment document in an otherwise empty `.tex` file |
 | `eq` / `sec` / `item` + **Tab** | Numbered equation, labeled section, or list item |
 
