@@ -73,6 +73,8 @@ local automatic = {
   math_snippet("sroot", "Square root", fmta("\\sqrt{<>}<>", { i(1), i(0) })),
   math_snippet("frac", "Fraction", fmta("\\frac{<>}{<>}<>", { i(1), i(2), i(0) })),
   math_snippet("cur", "Curly braces", fmta("\\{<>\\}<>", { i(1), i(0) })),
+  math_snippet("abs", "Absolute value", fmta("\\lvert <> \\rvert<>", { i(1), i(0) })),
+  math_snippet("norm", "Norm", fmta("\\lVert <> \\rVert<>", { i(1), i(0) })),
   math_snippet("limit", "Limit x to c", fmta("\\lim_{x \\to <>} <>", { i(1, "c"), i(0) })),
 }
 
@@ -96,6 +98,7 @@ for _, logic in ipairs({
   { "forall", "\\forall", "Universal quantifier" },
   { "exists", "\\exists", "Existential quantifier" },
   { "in", "\\in", "Set membership" },
+  { "mid", "\\mid", "Set-builder separator" },
 }) do
   automatic[#automatic + 1] = math_snippet(logic[1], logic[3], fmta(logic[2] .. " <>", { i(0) }))
 end
