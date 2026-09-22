@@ -63,6 +63,16 @@ local function math_snippet(trigger, name, expansion)
   }, expansion)
 end
 
+local function math_operator(trigger, name, command)
+  return s({
+    trig = trigger,
+    name = name,
+    wordTrig = false,
+    condition = in_math,
+    show_condition = in_math,
+  }, fmta(command .. " <>", { i(0) }))
+end
+
 local automatic = {
   s({
     trig = "mm",
@@ -77,6 +87,8 @@ local automatic = {
   math_snippet("norm", "Norm", fmta("\\lVert <> \\rVert<>", { i(1), i(0) })),
   math_snippet("mbf", "Math bold", fmta("\\mathbf{<>}<>", { i(1), i(0) })),
   math_snippet("lim", "Limit", fmta("\\lim_{<> \\to <>} <>", { i(1), i(2), i(0) })),
+  math_operator(">=", "Greater than or equal", "\\ge"),
+  math_operator("<=", "Less than or equal", "\\le"),
 }
 
 for _, set in ipairs({

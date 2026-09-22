@@ -61,6 +61,7 @@ completion and Ctrl-e closes it.
 | `in` | Set membership `\in` |
 | `mid` | Set-builder separator `\mid` |
 | `cdot` | Dot product `\cdot` |
+| `>=` / `<=` | `\ge` / `\le`, including directly after a variable |
 | `starter` + **Tab** | Complete course-assignment document in an otherwise empty `.tex` file |
 | `eq` / `sec` / `item` + **Tab** | Numbered equation, labeled section, or list item |
 
