@@ -47,6 +47,7 @@ completion and Ctrl-e closes it.
 
 | Trigger | Expansion |
 | --- | --- |
+| `il` | Inline math `\(…\)` while writing prose |
 | `mm` | Display math `\[ … \]` while writing prose |
 | `st` | `\sqrt{…}` |
 | `frac` | `\frac{…}{…}` |

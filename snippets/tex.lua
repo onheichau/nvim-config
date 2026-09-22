@@ -75,6 +75,12 @@ end
 
 local automatic = {
   s({
+    trig = "il",
+    name = "Inline math",
+    condition = not_in_math,
+    show_condition = not_in_math,
+  }, fmta("\\(<>\\)<>", { i(1), i(0) })),
+  s({
     trig = "mm",
     name = "Display math",
     condition = not_in_math,
