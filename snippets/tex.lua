@@ -50,6 +50,10 @@ local function in_math()
   return ok and result == 1
 end
 
+local function not_in_math()
+  return not in_math()
+end
+
 local function math_snippet(trigger, name, expansion)
   return s({
     trig = trigger,
@@ -60,9 +64,15 @@ local function math_snippet(trigger, name, expansion)
 end
 
 local automatic = {
+  s({
+    trig = "mm",
+    name = "Display math",
+    condition = not_in_math,
+    show_condition = not_in_math,
+  }, fmta("\\[\n  <>\n\\]<>", { i(1), i(0) })),
   math_snippet("sroot", "Square root", fmta("\\sqrt{<>}<>", { i(1), i(0) })),
   math_snippet("frac", "Fraction", fmta("\\frac{<>}{<>}<>", { i(1), i(2), i(0) })),
-  math_snippet("curly", "Curly braces", fmta("\\{<>\\}<>", { i(1), i(0) })),
+  math_snippet("cur", "Curly braces", fmta("\\{<>\\}<>", { i(1), i(0) })),
   math_snippet("limit", "Limit x to c", fmta("\\lim_{x \\to <>} <>", { i(1, "c"), i(0) })),
 }
 
@@ -73,11 +83,20 @@ for _, set in ipairs({
   { "NN", "N", "Natural numbers" },
   { "CC", "C", "Complex numbers" },
 }) do
-  automatic[#automatic + 1] = math_snippet(
-    set[1],
-    set[3],
-    fmta("\\mathbb{<>}<>", { ls.text_node(set[2]), i(0) })
-  )
+  automatic[#automatic + 1] =
+    math_snippet(set[1], set[3], fmta("\\mathbb{<>}<>", { ls.text_node(set[2]), i(0) }))
+end
+
+for _, logic in ipairs({
+  { "not", "\\neg", "Logical negation" },
+  { "and", "\\land", "Logical conjunction" },
+  { "or", "\\lor", "Logical disjunction" },
+  { "implies", "\\implies", "Logical implication" },
+  { "iff", "\\iff", "Logical equivalence" },
+  { "forall", "\\forall", "Universal quantifier" },
+  { "exists", "\\exists", "Existential quantifier" },
+}) do
+  automatic[#automatic + 1] = math_snippet(logic[1], logic[3], fmta(logic[2] .. " <>", { i(0) }))
 end
 
 return manual, automatic

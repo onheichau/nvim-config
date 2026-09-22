@@ -47,18 +47,23 @@ completion and Ctrl-e closes it.
 
 | Trigger | Expansion |
 | --- | --- |
+| `mm` | Display math `\[ … \]` while writing prose |
 | `sroot` | `\sqrt{…}` |
 | `frac` | `\frac{…}{…}` |
-| `curly` | Escaped set braces `\{…\}` |
+| `cur` | Escaped set braces `\{…\}` |
 | `RR` / `ZZ` / `QQ` / `NN` / `CC` | Real, integer, rational, natural, and complex number sets |
 | `limit` | `\lim_{x \to c}` followed by the expression |
+| `not` / `and` / `or` | `\neg` / `\land` / `\lor` |
+| `implies` / `iff` | `\implies` / `\iff` |
+| `forall` / `exists` | `\forall` / `\exists` |
 | `starter` + **Tab** | Complete course-assignment document in an otherwise empty `.tex` file |
 | `eq` / `sec` / `item` + **Tab** | Numbered equation, labeled section, or list item |
 
-Math triggers expand automatically only inside a VimTeX math zone. Their first editable
-field is selected immediately; Tab / Shift-Tab moves through later fields. The `starter`
-snippet asks for course code, assignment, name, and student ID in that order, then places
-the cursor under Problem 1.
+`mm` expands automatically outside math and places the cursor inside the display. The
+other math triggers expand automatically only inside a VimTeX math zone. Their first
+editable field is selected immediately; Tab / Shift-Tab moves through later fields. The
+`starter` snippet asks for course code, assignment, name, and student ID in that order,
+then places the cursor under Problem 1.
 
 Existing personal mappings, PDF commands and snippets remain in `lua/paul/keyremap.lua`
 and `lua/paul/snippets.lua`. The `a/A`, `v/V`, `s/S` swaps and buffer navigation are retained.

@@ -146,17 +146,34 @@ local function run()
   check(current and current.pos == 1, "course starter did not select course code")
   ls.unlink_current()
 
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "mm " })
+  vim.api.nvim_win_set_cursor(0, { 1, 2 })
+  ls.expand_auto()
+  vim.wait(50)
+  expanded = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
+  check(expanded:find("\\[\n  \n\\]", 1, true), "display-math snippet malformed")
+  current = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
+  check(current and current.pos == 1, "display-math snippet cursor misplaced")
+  ls.unlink_current()
+
   local prefix = "\\( "
   for _, case in ipairs({
     { "sroot", "\\sqrt{}", true },
     { "frac", "\\frac{}{}", true },
-    { "curly", "\\{\\}", true },
+    { "cur", "\\{\\}", true },
     { "limit", "\\lim_{x \\to c}", true },
     { "RR", "\\mathbb{R}" },
     { "ZZ", "\\mathbb{Z}" },
     { "QQ", "\\mathbb{Q}" },
     { "NN", "\\mathbb{N}" },
     { "CC", "\\mathbb{C}" },
+    { "not", "\\neg" },
+    { "and", "\\land" },
+    { "or", "\\lor" },
+    { "implies", "\\implies" },
+    { "iff", "\\iff" },
+    { "forall", "\\forall" },
+    { "exists", "\\exists" },
   }) do
     vim.api.nvim_buf_set_lines(0, 0, -1, false, { prefix .. case[1] .. "  \\)" })
     vim.api.nvim_win_set_cursor(0, { 1, #prefix + #case[1] })
@@ -173,6 +190,12 @@ local function run()
   ls.expand_auto()
   vim.wait(50)
   check(vim.api.nvim_get_current_line() == "frac ", "math snippet expanded in prose")
+
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { prefix .. "mm  \\)" })
+  vim.api.nvim_win_set_cursor(0, { 1, #prefix + 2 })
+  ls.expand_auto()
+  vim.wait(50)
+  check(vim.api.nvim_get_current_line() == prefix .. "mm  \\)", "display-math snippet expanded inside math")
 
   vim.cmd.enew()
   vim.bo.filetype = "tex"
