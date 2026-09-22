@@ -5,7 +5,6 @@ return {
     build = "make install_jsregexp",
     dependencies = {
       "rafamadriz/friendly-snippets",
-      "iurimateus/luasnip-latex-snippets.nvim",
     },
     config = function()
       local ls = require("luasnip")
@@ -13,10 +12,6 @@ return {
         history = true,
         update_events = "TextChanged,TextChangedI",
         enable_autosnippets = true,
-      })
-      require("luasnip-latex-snippets").setup({
-        use_treesitter = false,
-        allow_on_markdown = false,
       })
       require("luasnip.loaders.from_vscode").lazy_load()
       require("luasnip.loaders.from_lua").lazy_load({ paths = { vim.fn.stdpath("config") .. "/snippets" } })

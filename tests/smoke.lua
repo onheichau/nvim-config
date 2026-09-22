@@ -116,32 +116,10 @@ local function run()
   vim.cmd.VimtexStopAll()
   check(vim.fn.eval("b:vimtex.compiler.is_running() ? 1 : 0") == 0, "compiler did not stop")
   vim.cmd("edit!")
-  -- The package's automatic snippets use VimTeX context: mk expands in prose,
-  -- while the math-only sr trigger remains literal there and expands in math.
+  -- Personal snippets use the real engine and produce valid LaTeX.
   vim.cmd.enew()
   vim.bo.filetype = "tex"
   local ls = require("luasnip")
-  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "mk " })
-  vim.api.nvim_win_set_cursor(0, { 1, 2 })
-  ls.expand_auto()
-  vim.wait(50)
-  check(vim.api.nvim_get_current_line():find("\\(  \\)", 1, true), "prose math snippet did not expand")
-  ls.unlink_current()
-
-  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "sr ", "\\( sr  \\)" })
-  vim.api.nvim_win_set_cursor(0, { 1, 2 })
-  ls.expand_auto()
-  vim.wait(50)
-  check(vim.api.nvim_get_current_line() == "sr ", "math-only snippet expanded in prose")
-  vim.api.nvim_win_set_cursor(0, { 2, 5 })
-  ls.expand_auto()
-  vim.wait(50)
-  check(vim.api.nvim_get_current_line():find("^2", 1, true), "math-only snippet did not expand in math")
-  ls.unlink_current()
-
-  -- Personal snippets still use the same engine and produce valid LaTeX.
-  vim.cmd.enew()
-  vim.bo.filetype = "tex"
   local snippets = dofile(vim.fn.stdpath("config") .. "/snippets/tex.lua")
   ls.snip_expand(snippets[1])
   -- LuaSnip probes optional vim-repeat with :silent!, which may set v:errmsg

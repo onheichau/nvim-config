@@ -40,24 +40,17 @@ Use `% !TeX program = xelatex` or `lualatex` at the top of the main file if your
 ## Completion and snippets
 
 Texlab provides diagnostics and navigation; VimTeX completes citations, labels and LaTeX
-commands. The LaTeX snippet collection expands common notation automatically and uses
-VimTeX to distinguish prose from math. Tab / Shift-Tab move between editable fields.
-The personal `eq`, `sec`, and `item` snippets still expand with **Tab**. Ctrl-j / Ctrl-k
+commands. LuaSnip provides the snippet engine, including automatic-snippet support for the
+custom LaTeX collection. Tab / Shift-Tab move between editable fields. Ctrl-j / Ctrl-k
 select completion candidates; Enter confirms only a selected candidate; Ctrl-Space opens
 completion and Ctrl-e closes it.
 
 | Trigger | Expansion |
 | --- | --- |
-| `mk` / `dm` | Inline / display math, only while writing prose |
-| `beg` / `ali` | Environment / align block, only at the start of a line |
-| `//` or `/` after a term | Fraction, only inside math |
-| `sr` / `cb` / `td` | Square / cube / arbitrary power, only inside math |
-| `x2` / `x_12` | Automatic one- or two-digit subscript, only inside math |
-| `RR` / `NN` / `->` | Common number sets and symbols, only inside math |
 | `eq` / `sec` / `item` + **Tab** | Numbered equation, labeled section, or list item |
 
-Automatic triggers expand as soon as they are typed. For example, type `mk`, then `x2sr`,
-to produce inline math containing `x_{2}^2`. The math-only triggers stay literal in prose.
+The third-party LaTeX snippet collection was removed so the automatic triggers can be
+designed locally in `snippets/tex.lua`.
 
 Existing personal mappings, PDF commands and snippets remain in `lua/paul/keyremap.lua`
 and `lua/paul/snippets.lua`. The `a/A`, `v/V`, `s/S` swaps and buffer navigation are retained.
