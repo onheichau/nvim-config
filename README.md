@@ -48,8 +48,9 @@ completion and Ctrl-e closes it.
 | Trigger | Expansion |
 | --- | --- |
 | `mm` | Display math `\[ … \]` while writing prose |
-| `sroot` | `\sqrt{…}` |
+| `st` | `\sqrt{…}` |
 | `frac` | `\frac{…}{…}` |
+| `pwo` | Power `^{…}`, including directly after a variable |
 | `cur` | Escaped set braces `\{…\}` |
 | `abs` / `norm` | Absolute value `\lvert … \rvert` / norm `\lVert … \rVert` |
 | `mbf` | Bold math `\mathbf{…}` |

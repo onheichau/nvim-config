@@ -158,7 +158,7 @@ local function run()
 
   local prefix = "\\( "
   for _, case in ipairs({
-    { "sroot", "\\sqrt{}", true },
+    { "st", "\\sqrt{}", true },
     { "frac", "\\frac{}{}", true },
     { "cur", "\\{\\}", true },
     { "lim", "\\lim_{ \\to }", true },
