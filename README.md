@@ -57,14 +57,15 @@ completion and Ctrl-e closes it.
 | `abs` / `norm` | Absolute value `\lvert … \rvert` / bold-vector norm `\lVert \mathbf{…} \rVert` |
 | `mbf` | Bold math `\mathbf{…}` |
 | `RR` / `ZZ` / `QQ` / `NN` / `CC` | Real, integer, rational, natural, and complex number sets |
-| `lim` | `\lim_{… \to …}` followed by the expression |
+| `lim` | `\displaystyle \lim_{… \to …}` followed by the expression |
 | `not` / `and` / `or` | `\neg` / `\land` / `\lor` |
 | `implies` / `iff` | `\implies` / `\iff` |
 | `forall` / `exists` | `\forall` / `\exists` |
 | `in` | Set membership `\in` |
 | `mid` | Set-builder separator `\mid` |
 | `md` | Dot product `\cdot` |
-| `dt` / `ep` | Greek letters `\delta` / `\epsilon` |
+| `dt` / `ep` | Greek letters `\delta` / `\varepsilon` |
+| `ff` / `gg` / `hh` | `f(x)` / `g(x)` / `h(x)` |
 | `>=` / `<=` | `\ge` / `\le`, including directly after a variable |
 | `starter` + **Tab** | Complete course-assignment document in an otherwise empty `.tex` file |
 | `eq` / `sec` / `item` + **Tab** | Numbered equation, labeled section, or list item |

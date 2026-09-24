@@ -161,7 +161,7 @@ local function run()
     { "st", "\\sqrt{}", true },
     { "frac", "\\frac{}{}", true },
     { "cur", "\\{\\}", true },
-    { "lim", "\\lim_{ \\to }", true },
+    { "lim", "\\displaystyle \\lim_{ \\to }", true },
     { "RR", "\\mathbb{R}" },
     { "ZZ", "\\mathbb{Z}" },
     { "QQ", "\\mathbb{Q}" },
@@ -174,6 +174,10 @@ local function run()
     { "iff", "\\iff" },
     { "forall", "\\forall" },
     { "exists", "\\exists" },
+    { "ep", "\\varepsilon" },
+    { "ff", "f(x)" },
+    { "gg", "g(x)" },
+    { "hh", "h(x)" },
   }) do
     vim.api.nvim_buf_set_lines(0, 0, -1, false, { prefix .. case[1] .. "  \\)" })
     vim.api.nvim_win_set_cursor(0, { 1, #prefix + #case[1] })
