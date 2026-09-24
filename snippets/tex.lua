@@ -96,7 +96,7 @@ local automatic = {
     fmta(
       [[
 \[
-  <>
+  {<>}
   \begin{cases}
     <> \\
     <>
@@ -109,7 +109,7 @@ local automatic = {
   math_snippet("st", "Square root", fmta("\\sqrt{<>}<>", { i(1), i(0) })),
   math_snippet("frac", "Fraction", fmta("\\frac{<>}{<>}<>", { i(1), i(2), i(0) })),
   s({
-    trig = "pwo",
+    trig = "pw",
     name = "Power",
     wordTrig = false,
     condition = in_math,
@@ -146,6 +146,8 @@ for _, logic in ipairs({
   { "in", "\\in", "Set membership" },
   { "mid", "\\mid", "Set-builder separator" },
   { "md", "\\cdot", "Dot product" },
+  { "dt", "\\delta", "Lowercase delta" },
+  { "ep", "\\epsilon", "Lowercase epsilon" },
 }) do
   automatic[#automatic + 1] = math_snippet(logic[1], logic[3], fmta(logic[2] .. " <>", { i(0) }))
 end

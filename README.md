@@ -52,7 +52,7 @@ completion and Ctrl-e closes it.
 | `mc` | Display math containing a two-row `cases` environment |
 | `st` | `\sqrt{…}` |
 | `frac` | `\frac{…}{…}` |
-| `pwo` | Power `^{…}`, including directly after a variable |
+| `pw` | Power `^{…}`, including directly after a variable |
 | `cur` | Escaped set braces `\{…\}` |
 | `abs` / `norm` | Absolute value `\lvert … \rvert` / bold-vector norm `\lVert \mathbf{…} \rVert` |
 | `mbf` | Bold math `\mathbf{…}` |
@@ -64,6 +64,7 @@ completion and Ctrl-e closes it.
 | `in` | Set membership `\in` |
 | `mid` | Set-builder separator `\mid` |
 | `md` | Dot product `\cdot` |
+| `dt` / `ep` | Greek letters `\delta` / `\epsilon` |
 | `>=` / `<=` | `\ge` / `\le`, including directly after a variable |
 | `starter` + **Tab** | Complete course-assignment document in an otherwise empty `.tex` file |
 | `eq` / `sec` / `item` + **Tab** | Numbered equation, labeled section, or list item |
