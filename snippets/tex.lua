@@ -119,6 +119,8 @@ local automatic = {
   math_snippet("abs", "Absolute value", fmta("\\lvert <> \\rvert<> ", { i(1), i(0) })),
   math_snippet("norm", "Bold vector norm", fmta("\\lVert \\mathbf{<>} \\rVert<> ", { i(1), i(0) })),
   math_snippet("mbf", "Math bold", fmta("\\mathbf{<>}<>", { i(1), i(0) })),
+  math_snippet("ve", "Vector", fmta("\\vec{<>}<>", { i(1), i(0) })),
+  math_snippet("BB", "Blackboard bold", fmta("\\mathbb{<>}<>", { i(1), i(0) })),
   math_snippet("lim", "Limit", fmta("\\displaystyle \\lim_{<> \\to <>} <>", { i(1), i(2), i(0) })),
   math_operator(">=", "Greater than or equal", "\\ge"),
   math_operator("<=", "Less than or equal", "\\le"),

@@ -161,6 +161,8 @@ local function run()
     { "st", "\\sqrt{}", true },
     { "frac", "\\frac{}{}", true },
     { "cur", "\\{\\}", true },
+    { "ve", "\\vec{}", true },
+    { "BB", "\\mathbb{}", true },
     { "lim", "\\displaystyle \\lim_{ \\to }", true },
     { "RR", "\\mathbb{R}" },
     { "ZZ", "\\mathbb{Z}" },

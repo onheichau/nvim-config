@@ -56,6 +56,7 @@ completion and Ctrl-e closes it.
 | `cur` | Escaped set braces `\{…\}` |
 | `abs` / `norm` | Absolute value `\lvert … \rvert` / bold-vector norm `\lVert \mathbf{…} \rVert` |
 | `mbf` | Bold math `\mathbf{…}` |
+| `ve` / `BB` | Vector `\vec{…}` / blackboard-bold `\mathbb{…}` |
 | `RR` / `ZZ` / `QQ` / `NN` / `CC` | Real, integer, rational, natural, and complex number sets |
 | `lim` | `\displaystyle \lim_{… \to …}` followed by the expression |
 | `not` / `and` / `or` | `\neg` / `\land` / `\lor` |
