@@ -53,6 +53,7 @@ completion and Ctrl-e closes it.
 | `st` | `\sqrt{…}` |
 | `frac` | `\frac{…}{…}` |
 | `pw` | Power `^{…}`, including directly after a variable |
+| Letter + digit | Automatic one-digit subscript in math: `x1` → `x_{1}`, `A9` → `A_{9}` |
 | `cur` | Escaped set braces `\{…\}` |
 | `abs` / `norm` | Absolute value `\lvert … \rvert` / bold-vector norm `\lVert \mathbf{…} \rVert` |
 | `mbf` | Bold math `\mathbf{…}` |

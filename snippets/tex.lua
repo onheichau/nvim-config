@@ -1,5 +1,5 @@
 local ls = require("luasnip")
-local s, i = ls.snippet, ls.insert_node
+local s, i, f = ls.snippet, ls.insert_node, ls.function_node
 local fmta = require("luasnip.extras.fmt").fmta
 local manual = {
   s(
@@ -115,6 +115,22 @@ local automatic = {
     condition = in_math,
     show_condition = in_math,
   }, fmta("^{<>}<>", { i(1), i(0) })),
+  s({
+    trig = "([A-Za-z])([0-9])",
+    name = "Automatic single-digit subscript",
+    regTrig = true,
+    wordTrig = false,
+    condition = in_math,
+    show_condition = in_math,
+  }, fmta("<>_{<>}<>", {
+    f(function(_, snippet)
+      return snippet.captures[1]
+    end),
+    f(function(_, snippet)
+      return snippet.captures[2]
+    end),
+    i(0),
+  })),
   math_snippet("cur", "Curly braces", fmta("\\{<>\\}<>", { i(1), i(0) })),
   math_snippet("abs", "Absolute value", fmta("\\lvert <> \\rvert<> ", { i(1), i(0) })),
   math_snippet("norm", "Bold vector norm", fmta("\\lVert \\mathbf{<>} \\rVert<> ", { i(1), i(0) })),

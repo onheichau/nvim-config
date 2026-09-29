@@ -191,11 +191,33 @@ local function run()
     ls.unlink_current()
   end
 
+  for _, case in ipairs({
+    { "a0", "a_{0}" },
+    { "z9", "z_{9}" },
+    { "A1", "A_{1}" },
+    { "Z8", "Z_{8}" },
+  }) do
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, { prefix .. case[1] .. "  \\)" })
+    vim.api.nvim_win_set_cursor(0, { 1, #prefix + #case[1] })
+    ls.expand_auto()
+    vim.wait(50)
+    check(vim.api.nvim_get_current_line():find(case[2], 1, true), case[1] .. " auto-subscript malformed")
+    current = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
+    check(current and current.pos == 0, case[1] .. " auto-subscript cursor misplaced")
+    ls.unlink_current()
+  end
+
   vim.api.nvim_buf_set_lines(0, 0, -1, false, { "frac " })
   vim.api.nvim_win_set_cursor(0, { 1, 4 })
   ls.expand_auto()
   vim.wait(50)
   check(vim.api.nvim_get_current_line() == "frac ", "math snippet expanded in prose")
+
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "x1 " })
+  vim.api.nvim_win_set_cursor(0, { 1, 2 })
+  ls.expand_auto()
+  vim.wait(50)
+  check(vim.api.nvim_get_current_line() == "x1 ", "auto-subscript expanded in prose")
 
   vim.api.nvim_buf_set_lines(0, 0, -1, false, { prefix .. "mm  \\)" })
   vim.api.nvim_win_set_cursor(0, { 1, #prefix + 2 })
