@@ -64,6 +64,7 @@ completion and Ctrl-e closes it.
 | `implies` / `iff` | `\implies` / `\iff` |
 | `forall` / `exists` | `\forall` / `\exists` |
 | `in` | Set membership `\in` |
+| `uni` / `inter` | Set union `\cup` / intersection `\cap` |
 | `mid` | Set-builder separator `\mid` |
 | `md` | Dot product `\cdot` |
 | `dt` / `ep` | Greek letters `\delta` / `\varepsilon` |

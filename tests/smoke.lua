@@ -176,6 +176,8 @@ local function run()
     { "iff", "\\iff" },
     { "forall", "\\forall" },
     { "exists", "\\exists" },
+    { "uni", "\\cup" },
+    { "inter", "\\cap" },
     { "ep", "\\varepsilon" },
     { "ff", "f(x)" },
     { "gg", "g(x)" },

@@ -162,6 +162,8 @@ for _, logic in ipairs({
   { "forall", "\\forall", "Universal quantifier" },
   { "exists", "\\exists", "Existential quantifier" },
   { "in", "\\in", "Set membership" },
+  { "uni", "\\cup", "Set union" },
+  { "inter", "\\cap", "Set intersection" },
   { "mid", "\\mid", "Set-builder separator" },
   { "md", "\\cdot", "Dot product" },
   { "dt", "\\delta", "Lowercase delta" },
