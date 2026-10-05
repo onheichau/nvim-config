@@ -133,17 +133,26 @@ local function run()
 
   -- The trailing space lets a headless normal-mode cursor sit immediately
   -- after the trigger, matching insert-mode behavior.
-  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "starter " })
-  vim.api.nvim_win_set_cursor(0, { 1, 7 })
-  check(ls.expand(), "course starter trigger did not expand")
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "start " })
+  vim.api.nvim_win_set_cursor(0, { 1, 5 })
+  check(ls.expand(), "article starter trigger did not expand")
   -- LuaSnip probes optional vim-repeat with :silent!, which may set v:errmsg
   -- when vim-repeat is absent even though expansion succeeds.
   vim.v.errmsg = ""
   local expanded = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
-  check(expanded:find("\\title{Course code", 1, true), "course starter title missing")
-  check(expanded:find("\\section*{Problem 1}", 1, true), "course starter body missing")
+  check(expanded:find("\\setlength{\\parindent}{0pt}", 1, true), "article starter paragraph style missing")
+  check(expanded:find("\\setlength{\\parskip}{0.6em}", 1, true), "article starter spacing missing")
+  check(
+    expanded:find("\\section*{insert here}\n\n\\end{document}", 1, true),
+    "article starter section or blank body line missing"
+  )
+  check(not expanded:find("\\title", 1, true), "obsolete course title remains in article starter")
   local current = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
-  check(current and current.pos == 1, "course starter did not select course code")
+  check(current and current.pos == 1, "article starter did not select the section title")
+  check(ls.jumpable(1), "article starter body field is unreachable")
+  ls.jump(1)
+  current = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
+  check(current and current.pos == 2, "article starter did not jump to the document body")
   ls.unlink_current()
 
   vim.api.nvim_buf_set_lines(0, 0, -1, false, { "mm " })

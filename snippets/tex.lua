@@ -4,11 +4,11 @@ local fmta = require("luasnip.extras.fmt").fmta
 local manual = {
   s(
     {
-      trig = "starter",
-      name = "Course assignment starter",
+      trig = "start",
+      name = "Minimal article starter",
       condition = function()
         local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-        return #lines == 1 and lines[1]:match("^%s*starter%s*$") ~= nil
+        return #lines == 1 and lines[1]:match("^%s*start%s*$") ~= nil
       end,
     },
     fmta(
@@ -18,24 +18,17 @@ local manual = {
 \usepackage{amsmath,amssymb}
 \usepackage[margin=1in]{geometry}
 \usepackage[hidelinks]{hyperref}
-
-\title{<>\\<>}
-\author{<>\\Student ID: <>}
-\date{\today}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
 
 \begin{document}
-\maketitle
-
-\section*{Problem 1}
+\section*{<>}
 <>
-
-\end{document}
+\end{document}<>
 ]],
       {
-        i(1, "Course code"),
-        i(2, "Assignment 1"),
-        i(3, "Your name"),
-        i(4, "Your student ID"),
+        i(1, "insert here"),
+        i(2),
         i(0),
       }
     )
@@ -115,22 +108,25 @@ local automatic = {
     condition = in_math,
     show_condition = in_math,
   }, fmta("^{<>}<>", { i(1), i(0) })),
-  s({
-    trig = "([A-Za-z])([0-9])",
-    name = "Automatic single-digit subscript",
-    regTrig = true,
-    wordTrig = false,
-    condition = in_math,
-    show_condition = in_math,
-  }, fmta("<>_{<>}<>", {
-    f(function(_, snippet)
-      return snippet.captures[1]
-    end),
-    f(function(_, snippet)
-      return snippet.captures[2]
-    end),
-    i(0),
-  })),
+  s(
+    {
+      trig = "([A-Za-z])([0-9])",
+      name = "Automatic single-digit subscript",
+      regTrig = true,
+      wordTrig = false,
+      condition = in_math,
+      show_condition = in_math,
+    },
+    fmta("<>_{<>}<>", {
+      f(function(_, snippet)
+        return snippet.captures[1]
+      end),
+      f(function(_, snippet)
+        return snippet.captures[2]
+      end),
+      i(0),
+    })
+  ),
   math_snippet("cur", "Curly braces", fmta("\\{<>\\}<>", { i(1), i(0) })),
   math_snippet("abs", "Absolute value", fmta("\\lvert <> \\rvert<> ", { i(1), i(0) })),
   math_snippet("norm", "Bold vector norm", fmta("\\lVert \\mathbf{<>} \\rVert<> ", { i(1), i(0) })),
@@ -161,7 +157,6 @@ for _, logic in ipairs({
   { "iff", "\\iff", "Logical equivalence" },
   { "forall", "\\forall", "Universal quantifier" },
   { "exists", "\\exists", "Existential quantifier" },
-  { "in", "\\in", "Set membership" },
   { "uni", "\\cup", "Set union" },
   { "inter", "\\cap", "Set intersection" },
   { "mid", "\\mid", "Set-builder separator" },

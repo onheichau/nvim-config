@@ -63,21 +63,20 @@ completion and Ctrl-e closes it.
 | `not` / `and` / `or` | `\neg` / `\land` / `\lor` |
 | `implies` / `iff` | `\implies` / `\iff` |
 | `forall` / `exists` | `\forall` / `\exists` |
-| `in` | Set membership `\in` |
 | `uni` / `inter` | Set union `\cup` / intersection `\cap` |
 | `mid` | Set-builder separator `\mid` |
 | `md` | Dot product `\cdot` |
 | `dt` / `ep` | Greek letters `\delta` / `\varepsilon` |
 | `ff` / `gg` / `hh` | `f(x)` / `g(x)` / `h(x)` |
 | `>=` / `<=` | `\ge` / `\le`, including directly after a variable |
-| `starter` + **Tab** | Complete course-assignment document in an otherwise empty `.tex` file |
+| `start` + **Tab** | Minimal article with paragraph spacing and an editable unnumbered section |
 | `eq` / `sec` / `item` + **Tab** | Numbered equation, labeled section, or list item |
 
 `mm` expands automatically outside math and places the cursor inside the display. The
 other math triggers expand automatically only inside a VimTeX math zone. Their first
 editable field is selected immediately; Tab / Shift-Tab moves through later fields. The
-`starter` snippet asks for course code, assignment, name, and student ID in that order,
-then places the cursor under Problem 1.
+`start` selects the unnumbered section title first; Tab then places the cursor in the
+document body.
 
 Existing personal mappings, PDF commands and snippets remain in `lua/paul/keyremap.lua`
 and `lua/paul/snippets.lua`. The `a/A`, `v/V`, `s/S` swaps and buffer navigation are retained.
