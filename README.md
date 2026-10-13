@@ -45,6 +45,9 @@ custom LaTeX collection. Tab / Shift-Tab move between editable fields. Ctrl-j / 
 select completion candidates; Enter confirms only a selected candidate; Ctrl-Space opens
 completion and Ctrl-e closes it.
 
+Python uses Pyright for diagnostics and completion. After `import re`, typing `re.` opens
+the available functions automatically; press Ctrl-Space if you want to reopen the menu.
+
 | Trigger | Expansion |
 | --- | --- |
 | `ii` | Inline math `\(…\)` while writing prose |
@@ -137,9 +140,9 @@ describes this configuration. VimTeX must load eagerly for inverse search to wor
 
 - `:Lazy` manages plugins; `:Lazy restore` restores the committed `lazy-lock.json`.
   Use `:Lazy update` deliberately, verify your workflow, and commit the resulting lockfile.
-- `:Mason` manages servers and formatters. Lua and Texlab install automatically.
+- `:Mason` manages servers and formatters. Lua, Pyright and Texlab install automatically.
   Existing Mason servers continue to work. For optional languages:
-  `:MasonInstall clangd pyright typescript-language-server bash-language-server css-lsp tailwindcss-language-server vim-language-server eslint-lsp`.
+  `:MasonInstall clangd typescript-language-server bash-language-server css-lsp tailwindcss-language-server vim-language-server eslint-lsp`.
 - Conform replaces archived null-ls; existing Black, clang-format, StyLua and Prettier
   installations are reused. Install them via `:MasonInstall black clang-format stylua prettier`.
   R formatting requires R's `styler` package. LaTeX is not reformatted on each live save.

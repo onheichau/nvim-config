@@ -5,18 +5,15 @@ return {
     config = function()
       require("mason").setup()
       vim.lsp.config("*", { capabilities = require("cmp_nvim_lsp").default_capabilities() })
-      vim.lsp.config(
-        "lua_ls",
-        {
-          settings = {
-            Lua = {
-              runtime = { version = "LuaJIT" },
-              diagnostics = { globals = { "vim" } },
-              workspace = { checkThirdParty = false, library = { vim.env.VIMRUNTIME } },
-            },
+      vim.lsp.config("lua_ls", {
+        settings = {
+          Lua = {
+            runtime = { version = "LuaJIT" },
+            diagnostics = { globals = { "vim" } },
+            workspace = { checkThirdParty = false, library = { vim.env.VIMRUNTIME } },
           },
-        }
-      )
+        },
+      })
       vim.lsp.config("clangd", {
         cmd = { "clangd", "--header-insertion=never" },
         filetypes = { "c", "cpp", "proto" },
@@ -32,6 +29,17 @@ return {
           "typescript",
           "typescriptreact",
           "vue",
+        },
+      })
+      vim.lsp.config("pyright", {
+        settings = {
+          python = {
+            analysis = {
+              autoImportCompletions = true,
+              diagnosticMode = "openFilesOnly",
+              typeCheckingMode = "basic",
+            },
+          },
         },
       })
       vim.lsp.config("texlab", {
@@ -56,7 +64,7 @@ return {
         "texlab",
       }
       require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "texlab" },
+        ensure_installed = { "lua_ls", "pyright", "texlab" },
         automatic_enable = servers,
       })
       -- Also support existing system installations, including R's languageserver.
@@ -89,44 +97,5 @@ return {
         end,
       })
     end,
-  },
-  {
-    "stevearc/conform.nvim",
-    event = "BufWritePre",
-    cmd = "ConformInfo",
-    keys = {
-      {
-        "<leader>f",
-        function()
-          require("conform").format({ async = true, lsp_format = "fallback" })
-        end,
-        mode = { "n", "v" },
-        desc = "Format",
-      },
-    },
-    opts = {
-      formatters_by_ft = {
-        lua = { "stylua" },
-        python = { "black" },
-        c = { "clang_format" },
-        cpp = { "clang_format" },
-        javascript = { "prettier" },
-        typescript = { "prettier" },
-        javascriptreact = { "prettier" },
-        typescriptreact = { "prettier" },
-        css = { "prettier" },
-        html = { "prettier" },
-        json = { "prettier" },
-        yaml = { "prettier" },
-        r = { "styler" },
-      },
-      format_on_save = function(buf)
-        -- Don't reflow prose, equations or snippets on every live-preview save.
-        if vim.tbl_contains({ "tex", "plaintex", "bib", "markdown" }, vim.bo[buf].filetype) then
-          return
-        end
-        return { timeout_ms = 1000, lsp_format = "never" }
-      end,
-    },
   },
 }

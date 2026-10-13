@@ -32,6 +32,10 @@ return {
     config = function()
       local cmp, ls = require("cmp"), require("luasnip")
       cmp.setup({
+        completion = {
+          autocomplete = { cmp.TriggerEvent.TextChanged },
+          completeopt = "menu,menuone,noselect",
+        },
         snippet = {
           expand = function(args)
             ls.lsp_expand(args.body)
