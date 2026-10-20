@@ -55,6 +55,7 @@ the available functions automatically; press Ctrl-Space if you want to reopen th
 | `mc` | Display math containing a two-row `cases` environment |
 | `st` | `\sqrt{…}` |
 | `frac` | `\frac{…}{…}` |
+| `bmatN` | Square-bracket `N × N` matrix for `N` from 1 to 9, e.g. `bmat3`; Tab moves through the cells row by row |
 | `pw` | Power `^{…}`, including directly after a variable |
 | Letter + digit | Automatic one-digit subscript in math: `x1` → `x_{1}`, `A9` → `A_{9}` |
 | `cur` | Escaped set braces `\{…\}` |

@@ -1,5 +1,6 @@
 local ls = require("luasnip")
-local s, i, f = ls.snippet, ls.insert_node, ls.function_node
+local s, i, f, d, sn, t =
+  ls.snippet, ls.insert_node, ls.function_node, ls.dynamic_node, ls.snippet_node, ls.text_node
 local fmta = require("luasnip.extras.fmt").fmta
 local manual = {
   s(
@@ -66,7 +67,32 @@ local function math_operator(trigger, name, command)
   }, fmta(command .. " <>", { i(0) }))
 end
 
+local function square_bmatrix(_, parent)
+  local size = tonumber(parent.captures[1])
+  local nodes = { t({ "\\begin{bmatrix}", "  " }) }
+  local cell = 1
+  for row = 1, size do
+    for column = 1, size do
+      nodes[#nodes + 1] = i(cell)
+      cell = cell + 1
+      if column < size then
+        nodes[#nodes + 1] = t(" & ")
+      end
+    end
+    nodes[#nodes + 1] = row < size and t({ [[ \\]], "  " }) or t({ "", "\\end{bmatrix}" })
+  end
+  return sn(nil, nodes)
+end
+
 local automatic = {
+  s({
+    trig = "bmat([1-9])",
+    name = "Square bracket matrix",
+    regTrig = true,
+    condition = in_math,
+    show_condition = in_math,
+    priority = 2000,
+  }, { d(1, square_bmatrix), i(0) }),
   s({
     trig = "ii",
     name = "Inline math",

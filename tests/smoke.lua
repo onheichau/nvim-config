@@ -218,6 +218,38 @@ local function run()
     ls.unlink_current()
   end
 
+  for _, size in ipairs({ 1, 2, 3 }) do
+    local trigger = "bmat" .. size
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, { prefix .. trigger .. "  \\)" })
+    vim.api.nvim_win_set_cursor(0, { 1, #prefix + #trigger })
+    ls.expand_auto()
+    vim.wait(50)
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    check(lines[1]:find("\\begin{bmatrix}", 1, true), trigger .. " did not open bmatrix")
+    check(#lines == size + 2, trigger .. " generated the wrong row count")
+    check(lines[size + 2]:find("\\end{bmatrix}", 1, true), trigger .. " did not close bmatrix")
+    for row = 1, size do
+      local _, separators = lines[row + 1]:gsub(" & ", "")
+      check(separators == size - 1, trigger .. " generated the wrong column count")
+      if row < size then
+        check(lines[row + 1]:sub(-2) == "\\\\", trigger .. " row separator is missing")
+      end
+    end
+    current = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
+    check(current and current.pos == 1, trigger .. " did not select the first cell")
+    for cell = 2, size * size do
+      check(ls.jumpable(1), trigger .. " has an unreachable cell")
+      ls.jump(1)
+      current = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
+      check(current and current.pos == cell, trigger .. " cells are out of order")
+    end
+    check(ls.jumpable(1), trigger .. " has no exit field")
+    ls.jump(1)
+    current = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
+    check(current and current.pos == 0, trigger .. " did not exit after the last cell")
+    ls.unlink_current()
+  end
+
   vim.api.nvim_buf_set_lines(0, 0, -1, false, { "frac " })
   vim.api.nvim_win_set_cursor(0, { 1, 4 })
   ls.expand_auto()
@@ -229,6 +261,12 @@ local function run()
   ls.expand_auto()
   vim.wait(50)
   check(vim.api.nvim_get_current_line() == "x1 ", "auto-subscript expanded in prose")
+
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "bmat3 " })
+  vim.api.nvim_win_set_cursor(0, { 1, 5 })
+  ls.expand_auto()
+  vim.wait(50)
+  check(vim.api.nvim_get_current_line() == "bmat3 ", "bmatrix snippet expanded in prose")
 
   vim.api.nvim_buf_set_lines(0, 0, -1, false, { prefix .. "mm  \\)" })
   vim.api.nvim_win_set_cursor(0, { 1, #prefix + 2 })
