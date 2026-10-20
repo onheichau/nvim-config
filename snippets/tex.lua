@@ -67,32 +67,33 @@ local function math_operator(trigger, name, command)
   }, fmta(command .. " <>", { i(0) }))
 end
 
-local function square_bmatrix(_, parent)
+local function augmented_array(_, parent)
   local size = tonumber(parent.captures[1])
-  local nodes = { t({ "\\begin{bmatrix}", "  " }) }
+  local columns = string.rep("c", size) .. "|c"
+  local nodes = { t({ "\\left[", "\\begin{array}{" .. columns .. "}", "  " }) }
   local cell = 1
   for row = 1, size do
-    for column = 1, size do
+    for column = 1, size + 1 do
       nodes[#nodes + 1] = i(cell)
       cell = cell + 1
-      if column < size then
+      if column <= size then
         nodes[#nodes + 1] = t(" & ")
       end
     end
-    nodes[#nodes + 1] = row < size and t({ [[ \\]], "  " }) or t({ "", "\\end{bmatrix}" })
+    nodes[#nodes + 1] = row < size and t({ [[ \\]], "  " }) or t({ "", "\\end{array}", "\\right]" })
   end
   return sn(nil, nodes)
 end
 
 local automatic = {
   s({
-    trig = "bmat([1-9])",
-    name = "Square bracket matrix",
+    trig = "arr([1-9])",
+    name = "Augmented array",
     regTrig = true,
     condition = in_math,
     show_condition = in_math,
     priority = 2000,
-  }, { d(1, square_bmatrix), i(0) }),
+  }, { d(1, augmented_array), i(0) }),
   s({
     trig = "ii",
     name = "Inline math",
