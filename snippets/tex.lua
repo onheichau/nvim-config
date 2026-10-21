@@ -67,33 +67,43 @@ local function math_operator(trigger, name, command)
   }, fmta(command .. " <>", { i(0) }))
 end
 
-local function augmented_array(_, parent)
-  local size = tonumber(parent.captures[1])
-  local columns = string.rep("c", size) .. "|c"
-  local nodes = { t({ "\\left[", "\\begin{array}{" .. columns .. "}", "  " }) }
-  local cell = 1
-  for row = 1, size do
-    for column = 1, size + 1 do
-      nodes[#nodes + 1] = i(cell)
-      cell = cell + 1
-      if column <= size then
-        nodes[#nodes + 1] = t(" & ")
+local function matrix_array(augmented)
+  return function(_, parent)
+    local size = tonumber(parent.captures[1])
+    local columns = augmented and (string.rep("r", size - 1) .. "|r") or string.rep("r", size)
+    local nodes = { t({ "\\left[", "\\begin{array}{" .. columns .. "}", "  " }) }
+    local cell = 1
+    for row = 1, size do
+      for column = 1, size do
+        nodes[#nodes + 1] = i(cell)
+        cell = cell + 1
+        if column < size then
+          nodes[#nodes + 1] = t(" & ")
+        end
       end
+      nodes[#nodes + 1] = row < size and t({ [[ \\]], "  " }) or t({ "", "\\end{array}", "\\right]" })
     end
-    nodes[#nodes + 1] = row < size and t({ [[ \\]], "  " }) or t({ "", "\\end{array}", "\\right]" })
+    return sn(nil, nodes)
   end
-  return sn(nil, nodes)
 end
 
 local automatic = {
   s({
-    trig = "arr([1-9])",
+    trig = "ag([1-9])",
     name = "Augmented array",
     regTrig = true,
     condition = in_math,
     show_condition = in_math,
     priority = 2000,
-  }, { d(1, augmented_array), i(0) }),
+  }, { d(1, matrix_array(true)), i(0) }),
+  s({
+    trig = "arr([1-9])",
+    name = "Square array",
+    regTrig = true,
+    condition = in_math,
+    show_condition = in_math,
+    priority = 2000,
+  }, { d(1, matrix_array(false)), i(0) }),
   s({
     trig = "ii",
     name = "Inline math",
