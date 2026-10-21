@@ -258,6 +258,47 @@ local function run()
     end
   end
 
+  local original_input = vim.fn.input
+  local answers = { "2", "3" }
+  vim.fn.input = function()
+    check(#answers > 0, "ARR requested more than two dimensions")
+    return table.remove(answers, 1)
+  end
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { prefix .. "ARR  \\)" })
+  vim.api.nvim_win_set_cursor(0, { 1, #prefix + 3 })
+  local rectangular_ok, rectangular_error = pcall(ls.expand)
+  vim.fn.input = original_input
+  check(rectangular_ok and rectangular_error, "ARR did not expand: " .. tostring(rectangular_error))
+  local rectangular = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  check(rectangular[2]:find("\\begin{array}{rrr}", 1, true), "ARR did not create three right-aligned columns")
+  check(#rectangular == 6, "ARR did not create two rows")
+  for row = 1, 2 do
+    local _, separators = rectangular[row + 2]:gsub(" & ", "")
+    check(separators == 2, "ARR created the wrong number of cells")
+  end
+  for cell = 2, 6 do
+    check(ls.jumpable(1), "ARR has an unreachable cell")
+    ls.jump(1)
+    current = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
+    check(current and current.pos == cell, "ARR cells are out of order")
+  end
+  ls.unlink_current()
+
+  vim.fn.input = function()
+    return "0"
+  end
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { prefix .. "ARR  \\)" })
+  vim.api.nvim_win_set_cursor(0, { 1, #prefix + 3 })
+  local cancelled_ok, cancelled_error = pcall(ls.expand)
+  vim.fn.input = original_input
+  check(cancelled_ok and cancelled_error, "ARR cancellation failed: " .. tostring(cancelled_error))
+  check(vim.api.nvim_get_current_line():find("ARR", 1, true), "invalid ARR dimensions removed the trigger")
+  ls.unlink_current()
+
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "ARR " })
+  vim.api.nvim_win_set_cursor(0, { 1, 3 })
+  check(not ls.expand(), "ARR expanded outside math mode")
+
   vim.api.nvim_buf_set_lines(0, 0, -1, false, { "frac " })
   vim.api.nvim_win_set_cursor(0, { 1, 4 })
   ls.expand_auto()

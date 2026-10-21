@@ -57,6 +57,7 @@ the available functions automatically; press Ctrl-Space if you want to reopen th
 | `frac` | `\frac{…}{…}` |
 | `agN` | Augmented `N × N` array (`N` from 1 to 9); `ag2` uses `{r|r}` with one `&` per row. Delete `|` to remove the divider. |
 | `arrN` | Regular `N × N` array with right-aligned columns; `arr2` uses `{rr}`. Tab moves through cells row by row. |
+| `ARR` + **Tab** | Prompts for rows and columns (1–20 each), then creates a rectangular array with right-aligned columns and Tab stops in row order. |
 | `pw` | Power `^{…}`, including directly after a variable |
 | Letter + digit | Automatic one-digit subscript in math: `x1` → `x_{1}`, `A9` → `A_{9}` |
 | `cur` | Escaped set braces `\{…\}` |

@@ -2,6 +2,77 @@ local ls = require("luasnip")
 local s, i, f, d, sn, t =
   ls.snippet, ls.insert_node, ls.function_node, ls.dynamic_node, ls.snippet_node, ls.text_node
 local fmta = require("luasnip.extras.fmt").fmta
+
+local function in_math()
+  local ok, result = pcall(vim.fn["vimtex#syntax#in_mathzone"])
+  return ok and result == 1
+end
+
+local function not_in_math()
+  return not in_math()
+end
+
+local function math_snippet(trigger, name, expansion)
+  return s({
+    trig = trigger,
+    name = name,
+    condition = in_math,
+    show_condition = in_math,
+  }, expansion)
+end
+
+local function math_operator(trigger, name, command)
+  return s({
+    trig = trigger,
+    name = name,
+    wordTrig = false,
+    condition = in_math,
+    show_condition = in_math,
+  }, fmta(command .. " <>", { i(0) }))
+end
+
+local function array_nodes(rows, columns, augmented)
+  local alignment = augmented and (string.rep("r", columns - 1) .. "|r") or string.rep("r", columns)
+  local nodes = { t({ "\\left[", "\\begin{array}{" .. alignment .. "}", "  " }) }
+  local cell = 1
+  for row = 1, rows do
+    for column = 1, columns do
+      nodes[#nodes + 1] = i(cell)
+      cell = cell + 1
+      if column < columns then
+        nodes[#nodes + 1] = t(" & ")
+      end
+    end
+    nodes[#nodes + 1] = row < rows and t({ [[ \\]], "  " }) or t({ "", "\\end{array}", "\\right]" })
+  end
+  return sn(nil, nodes)
+end
+
+local function matrix_array(augmented)
+  return function(_, parent)
+    local size = tonumber(parent.captures[1])
+    return array_nodes(size, size, augmented)
+  end
+end
+
+local function prompt_dimension(label)
+  local ok, answer = pcall(vim.fn.input, label .. " (1-20; Enter to cancel): ")
+  if not ok or not answer:match("^[1-9]%d*$") then
+    return nil
+  end
+  local number = tonumber(answer)
+  return number <= 20 and number or nil
+end
+
+local function prompted_array()
+  local rows = prompt_dimension("Matrix rows")
+  local columns = rows and prompt_dimension("Matrix columns")
+  if not columns then
+    return sn(nil, t("ARR"))
+  end
+  return array_nodes(rows, columns, false)
+end
+
 local manual = {
   s(
     {
@@ -34,58 +105,14 @@ local manual = {
       }
     )
   ),
+  s({ trig = "ARR", name = "Rectangular matrix", condition = in_math, show_condition = in_math }, {
+    d(1, prompted_array),
+    i(0),
+  }),
   s("eq", fmta("\\begin{equation}\n  <>\n  \\label{eq:<>}\n\\end{equation}\n<>", { i(1), i(2), i(0) })),
   s("item", fmta("\\item <>", { i(0) })),
   s("sec", fmta("\\section{<>}\n\\label{sec:<>}\n<>", { i(1), i(2), i(0) })),
 }
-
-local function in_math()
-  local ok, result = pcall(vim.fn["vimtex#syntax#in_mathzone"])
-  return ok and result == 1
-end
-
-local function not_in_math()
-  return not in_math()
-end
-
-local function math_snippet(trigger, name, expansion)
-  return s({
-    trig = trigger,
-    name = name,
-    condition = in_math,
-    show_condition = in_math,
-  }, expansion)
-end
-
-local function math_operator(trigger, name, command)
-  return s({
-    trig = trigger,
-    name = name,
-    wordTrig = false,
-    condition = in_math,
-    show_condition = in_math,
-  }, fmta(command .. " <>", { i(0) }))
-end
-
-local function matrix_array(augmented)
-  return function(_, parent)
-    local size = tonumber(parent.captures[1])
-    local columns = augmented and (string.rep("r", size - 1) .. "|r") or string.rep("r", size)
-    local nodes = { t({ "\\left[", "\\begin{array}{" .. columns .. "}", "  " }) }
-    local cell = 1
-    for row = 1, size do
-      for column = 1, size do
-        nodes[#nodes + 1] = i(cell)
-        cell = cell + 1
-        if column < size then
-          nodes[#nodes + 1] = t(" & ")
-        end
-      end
-      nodes[#nodes + 1] = row < size and t({ [[ \\]], "  " }) or t({ "", "\\end{array}", "\\right]" })
-    end
-    return sn(nil, nodes)
-  end
-end
 
 local automatic = {
   s({
