@@ -68,6 +68,7 @@ the available functions automatically; press Ctrl-Space if you want to reopen th
 | `lim` | `\displaystyle \lim_{… \to …}` followed by the expression |
 | `not` / `and` / `or` | `\neg` / `\land` / `\lor` |
 | `implies` / `iff` | `\implies` / `\iff` |
+| `->` | Right arrow `\rightarrow`, including directly after a variable |
 | `forall` / `exists` | `\forall` / `\exists` |
 | `uni` / `inter` | Set union `\cup` / intersection `\cap` |
 | `mid` | Set-builder separator `\mid` |

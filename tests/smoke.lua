@@ -183,6 +183,7 @@ local function run()
     { "or", "\\lor" },
     { "implies", "\\implies" },
     { "iff", "\\iff" },
+    { "->", "\\rightarrow" },
     { "forall", "\\forall" },
     { "exists", "\\exists" },
     { "uni", "\\cup" },
@@ -310,6 +311,24 @@ local function run()
   ls.expand_auto()
   vim.wait(50)
   check(vim.api.nvim_get_current_line() == "x1 ", "auto-subscript expanded in prose")
+
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { prefix .. "x->  \\)" })
+  vim.api.nvim_win_set_cursor(0, { 1, #prefix + 3 })
+  ls.expand_auto()
+  vim.wait(50)
+  check(
+    vim.api.nvim_get_current_line():find("x\\rightarrow ", 1, true),
+    "right arrow did not expand after a variable"
+  )
+  current = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
+  check(current and current.pos == 0, "right arrow cursor misplaced")
+  ls.unlink_current()
+
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "x-> " })
+  vim.api.nvim_win_set_cursor(0, { 1, 3 })
+  ls.expand_auto()
+  vim.wait(50)
+  check(vim.api.nvim_get_current_line() == "x-> ", "right arrow expanded in prose")
 
   vim.api.nvim_buf_set_lines(0, 0, -1, false, { "arr3 " })
   vim.api.nvim_win_set_cursor(0, { 1, 5 })
