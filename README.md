@@ -69,6 +69,7 @@ the available functions automatically; press Ctrl-Space if you want to reopen th
 | `not` / `and` / `or` | `\neg` / `\land` / `\lor` |
 | `implies` / `iff` | `\implies` / `\iff` |
 | `->` | Right arrow `\rightarrow`, including directly after a variable |
+| `<->` | Single-line two-headed arrow `\leftrightarrow`, including directly after a variable |
 | `forall` / `exists` | `\forall` / `\exists` |
 | `uni` / `inter` | Set union `\cup` / intersection `\cap` |
 | `mid` | Set-builder separator `\mid` |
