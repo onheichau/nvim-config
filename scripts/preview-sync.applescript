@@ -67,16 +67,21 @@ on run argv
         if pageNumber > 0 and canNavigate then
           if not frontmost then error "Preview lost focus; navigation cancelled"
           if exists sheet 1 of targetWindow then error "Preview has a dialog open; navigation cancelled"
-          keystroke "g" using {command down, option down}
-          repeat 40 times
-            if exists sheet 1 of targetWindow then exit repeat
-            delay 0.025
-          end repeat
-          if not (exists sheet 1 of targetWindow) then error "Preview did not show Go to Page"
-          tell sheet 1 of targetWindow
-            set value of text field 1 to pageNumber as text
-            click button "OK"
-          end tell
+          my openPageDialog(targetWindow)
+          set reportedPage to value of text field 1 of sheet 1 of targetWindow
+          -- On PDF reload, Preview can retain currentPage while resetting its
+          -- scroll position to page one. Going to that same page is then a no-op.
+          -- A real page transition resets PDFKit's stale navigation state.
+          if reportedPage is (pageNumber as text) then
+            if pageNumber > 1 then
+              set neighboringPage to pageNumber - 1
+            else
+              set neighboringPage to 2
+            end if
+            my submitPage(targetWindow, neighboringPage)
+            my openPageDialog(targetWindow)
+          end if
+          my submitPage(targetWindow, pageNumber)
         end if
 
         -- Navigation never restores window geometry after the sheet closes.
@@ -89,6 +94,32 @@ on run argv
   my restoreFocus(previousProcess)
   return placementNote
 end run
+
+on openPageDialog(targetWindow)
+  tell application "System Events" to tell process "Preview"
+    if not frontmost then error "Preview lost focus; navigation cancelled"
+    keystroke "g" using {command down, option down}
+    repeat 40 times
+      if exists sheet 1 of targetWindow then return
+      delay 0.01
+    end repeat
+    error "Preview did not show Go to Page"
+  end tell
+end openPageDialog
+
+on submitPage(targetWindow, pageNumber)
+  tell application "System Events" to tell process "Preview"
+    tell sheet 1 of targetWindow
+      set value of text field 1 to pageNumber as text
+      click button "OK"
+    end tell
+    repeat 40 times
+      if not (exists sheet 1 of targetWindow) then return
+      delay 0.01
+    end repeat
+    error "Preview did not finish page navigation"
+  end tell
+end submitPage
 
 on placePDF(displayScript, pdfURL)
   try

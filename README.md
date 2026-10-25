@@ -49,6 +49,9 @@ Preview's English Go to Page dialog and the terminal's existing macOS Accessibil
 and Automation permissions. Set `vim.g.latex_preview_follow_cursor = false` to keep
 refreshing without jumping pages. The `.synctex.gz` file is retained while editing
 and removed only when you quit the project.
+When Preview already reports the requested page, synchronization briefly navigates
+to an adjacent page and back. This works around Preview retaining the page number
+while resetting its actual scroll position after PDF reloads.
 
 With an external display connected and the built-in screen available, each refresh
 moves the PDF window onto the MacBook display and fills its usable area. This is a
