@@ -1,0 +1,81 @@
+"""Run with python3 tests/cleanup.py; all compilation/deletion uses temporary files."""
+
+import os
+from pathlib import Path
+import subprocess
+import tempfile
+
+
+SOURCE = r"""\documentclass{article}
+\usepackage{hyperref}
+\begin{document}
+Cleanup test.
+\end{document}
+"""
+
+SCRIPT = r"""
+local ok, err = pcall(function()
+  vim.g.vimtex_view_enabled = 0
+  vim.cmd.edit(vim.fn.fnameescape(vim.env.CLEANUP_SOURCE))
+  assert(require('paul.latex').compile(), 'compiler did not start')
+  local root = vim.fn.fnamemodify(vim.env.CLEANUP_SOURCE, ':h')
+  assert(vim.wait(30000, function()
+    return vim.fn.filereadable(root .. '/test.pdf') == 1
+      and vim.fn.filereadable(root .. '/test.synctex.gz') == 1
+  end, 100), 'PDF and SyncTeX were not generated')
+  vim.wait(300)
+  vim.fn.writefile({'formatter log'}, root .. '/indent.log')
+  if vim.env.CLEANUP_QUIT == 'q!' then
+    vim.api.nvim_buf_set_lines(0, -1, -1, false, {'% unsaved edit'})
+  elseif vim.env.CLEANUP_QUIT == 'x' then
+    vim.bo.modified = true
+  end
+  vim.cmd(vim.env.CLEANUP_QUIT)
+  if vim.env.CLEANUP_QUIT == 'bwipeout!' then
+    vim.cmd('qall!')
+  end
+end)
+if not ok then
+  print(err)
+  vim.cmd('cquit 1')
+end
+"""
+
+
+with tempfile.TemporaryDirectory(prefix="nvim-latex-cleanup-") as temporary:
+    base = Path(temporary)
+    config = base / "config"
+    config.mkdir()
+    (config / "nvim").symlink_to(Path(__file__).resolve().parents[1])
+    script = base / "cleanup.lua"
+    script.write_text(SCRIPT)
+    for command in ("q", "q!", "x", "wq", "bwipeout!"):
+        project = base / ("project with spaces " + command)
+        project.mkdir()
+        source = project / "test.tex"
+        source.write_text(SOURCE)
+        protected = {
+            "notes.txt": "Keep these notes",
+            "other.tex": "Other source",
+            "other.pdf": "Other PDF",
+            "other.aux": "Other project's auxiliary file",
+            "references.bib": "Bibliography source",
+        }
+        for name, contents in protected.items():
+            (project / name).write_text(contents)
+        env = dict(os.environ, XDG_CONFIG_HOME=str(config),
+                   XDG_STATE_HOME=str(base / "state"), XDG_CACHE_HOME=str(base / "cache"),
+                   CLEANUP_SOURCE=str(source), CLEANUP_QUIT=command)
+        result = subprocess.run(
+            ["nvim", "--headless", "-i", "NONE", "+luafile " + str(script)],
+            env=env, cwd=project, text=True, capture_output=True, timeout=45,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "LaTeX cleanup:" not in result.stderr, result.stderr
+        assert source.read_text() == SOURCE, f"{command}: source changed"
+        assert (project / "test.pdf").read_bytes().startswith(b"%PDF"), command
+        for name, contents in protected.items():
+            assert (project / name).read_text() == contents, f"{command}: changed {name}"
+        remaining = {path.name for path in project.iterdir()}
+        assert remaining == {*protected, "test.tex", "test.pdf"}, (command, remaining)
+        print(f"PASS {command}: source/PDF preserved, build files removed, unrelated files preserved")

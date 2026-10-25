@@ -37,6 +37,13 @@ The sample includes a chapter, equation reference and BibTeX bibliography. VimTe
 handle the main document, repeated passes and bibliography generation.
 Use `% !TeX program = xelatex` or `lualatex` at the top of the main file if your course needs it.
 
+Quitting Neovim with `:q`, `:q!`, `:x`, or `:wq` stops the compiler and cleans LaTeX
+auxiliary files, including `.aux`, `.log`, `.out`, `.fls`, `.fdb_latexmk`,
+`.synctex.gz`, and `indent.log`. Your source files and final PDF remain. This also
+runs when the last buffer for a project is wiped with `:bwipeout`. Merely hiding
+a buffer or closing one of several windows keeps the build files until you quit
+the project. Set `vim.g.latex_cleanup_on_exit = false` to disable cleanup.
+
 ## Completion and snippets
 
 Texlab provides diagnostics and navigation; VimTeX completes citations, labels and LaTeX
@@ -179,3 +186,7 @@ NVIM_TEST_PROJECT="$test_project" nvim --headless '+luafile ~/.config/nvim/tests
 The test needs installed plugins, Texlab and TeX. For an isolated run, set
 `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, `XDG_STATE_HOME`, and `XDG_CACHE_HOME` to a disposable
 profile and put this config at `$XDG_CONFIG_HOME/nvim` before launching Neovim.
+
+Run `python3 tests/cleanup.py` from this repository to test cleanup with real
+compilation and quit commands in disposable folders, including paths with spaces
+and checks that source, PDF, and unrelated files survive.

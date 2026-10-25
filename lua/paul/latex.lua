@@ -175,6 +175,39 @@ function M.toggle()
   end
 end
 
+function M.cleanup()
+  if vim.g.latex_cleanup_on_exit == false or not vim.b.vimtex then
+    return
+  end
+  -- VimTeX supplies the project state even when the current buffer is not TeX.
+  -- Its normal clean preserves the PDF and respects output directories/latexmkrc.
+  local ok, err = pcall(function()
+    if vim.fn.eval("exists('b:vimtex.compiler.clean')") == 0 then
+      return
+    end
+    vim.cmd("call b:vimtex.compiler.stop()")
+    local job = vim.fn.eval("get(b:vimtex.compiler, 'job', -1)")
+    if job > 0 and vim.fn.jobwait({ job }, 5000)[1] == -1 then
+      error("compiler did not stop; temporary files were kept")
+    end
+    local synctex = vim.fn.eval("b:vimtex.compiler.get_file('synctex.gz')")
+    local root = vim.b.vimtex.root
+    vim.cmd("call b:vimtex.compiler.clean(0)")
+    if vim.v.shell_error ~= 0 then
+      error("compiler cleanup failed; see :VimtexInfo")
+    end
+    if synctex ~= "" then
+      vim.fn.delete(synctex)
+    end
+    if root and root ~= "" then
+      vim.fn.delete(root .. "/indent.log")
+    end
+  end)
+  if not ok then
+    vim.notify("LaTeX cleanup: " .. tostring(err), vim.log.levels.WARN)
+  end
+end
+
 function M.setup()
   vim.api.nvim_create_user_command(
     "LatexLive",
@@ -182,6 +215,12 @@ function M.setup()
     { desc = "Toggle LaTeX live auto-save for this buffer" }
   )
   local group = vim.api.nvim_create_augroup("PaulLatexLive", { clear = true })
+  vim.api.nvim_create_autocmd("User", {
+    group = group,
+    pattern = "VimtexEventQuit",
+    callback = M.cleanup,
+    desc = "Clean LaTeX auxiliary files when quitting a project; preserve the PDF",
+  })
   vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "TextChangedP", "InsertLeave" }, {
     group = group,
     callback = function(event)
