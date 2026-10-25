@@ -5,10 +5,15 @@ local last_method = "No refresh yet"
 local last_detail = ""
 local generation = 0
 local busy, pending, warned = false, nil, false
+local active_process, last_project
+local closing = false
+local handed_off = {}
 
 local function remember()
   local state = vim.b.vimtex
   if vim.bo.filetype == "tex" and state and state.tex then
+    last_project = state.tex
+    handed_off[state.tex] = nil
     locations[state.tex] = {
       source = vim.api.nvim_buf_get_name(0),
       line = vim.api.nvim_win_get_cursor(0)[1],
@@ -25,6 +30,9 @@ end
 
 local launch
 launch = function(request)
+  if closing then
+    return
+  end
   if busy then
     pending = request
     return
@@ -38,7 +46,7 @@ launch = function(request)
   local display_script = vim.g.latex_preview_builtin_display ~= false
       and vim.api.nvim_get_runtime_file("scripts/preview-display.js", false)[1]
     or ""
-  vim.system(
+  active_process = vim.system(
     {
       "osascript",
       script,
@@ -87,6 +95,9 @@ launch = function(request)
 end
 
 function M.refresh()
+  if closing then
+    return
+  end
   local state = vim.b.vimtex
   if not state or vim.g.vimtex_view_enabled == 0 then
     return
@@ -130,6 +141,46 @@ function M.refresh()
   )
 end
 
+function M.finish()
+  if vim.g.latex_preview_focus_on_exit == false or vim.g.vimtex_view_enabled == 0 then
+    return
+  end
+  local state = vim.b.vimtex
+  if not state or handed_off[state.tex] then
+    return
+  end
+  local exiting = vim.v.exiting ~= vim.NIL
+  -- VimTeX quits every loaded project at exit; hand off only the last edited one.
+  if exiting and last_project and state.tex ~= last_project then
+    return
+  end
+  local ok, pdf = pcall(vim.fn.eval, "b:vimtex.compiler.get_file('pdf')")
+  if not ok or pdf == "" or vim.fn.filereadable(pdf) ~= 1 then
+    return
+  end
+  local script = vim.api.nvim_get_runtime_file("scripts/preview-finish.applescript", false)[1]
+  local display = vim.api.nvim_get_runtime_file("scripts/preview-display.js", false)[1]
+  if not script or not display then
+    return
+  end
+  closing = true
+  generation = generation + 1
+  pending = nil
+  handed_off[state.tex] = true
+  pdf = vim.uv.fs_realpath(pdf) or pdf
+  vim.fn.jobstart({
+    "osascript",
+    script,
+    pdf,
+    vim.uri_from_fname(pdf),
+    display,
+    tostring(busy and active_process and active_process.pid or 0),
+  }, { detach = true })
+  if not exiting then
+    closing = false
+  end
+end
+
 function M.setup()
   local group = vim.api.nvim_create_augroup("LatexPreviewRefresh", { clear = true })
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "CursorMoved", "CursorMovedI" }, {
@@ -141,6 +192,12 @@ function M.setup()
     group = group,
     pattern = "VimtexEventCompileSuccess",
     callback = M.refresh,
+  })
+  vim.api.nvim_create_autocmd("User", {
+    group = group,
+    pattern = "VimtexEventQuit",
+    callback = M.finish,
+    desc = "Focus the completed PDF and move it to an external display on project exit",
   })
   vim.api.nvim_create_user_command("LatexPreview", M.refresh, {
     desc = "Refresh native Preview and follow the cursor's PDF page",

@@ -1,11 +1,17 @@
 // Native JXA: identify the built-in display, then maximize only the requested PDF.
 // Run with --inspect for read-only display diagnostics (no Accessibility access).
-function targetFrame(screens) {
-  if (screens.length < 2 || !screens.some(function (s) { return !s.builtIn; })) return null;
-  var builtIn = screens.filter(function (s) { return s.builtIn; })[0];
-  if (!builtIn) return null; // Closed lid, desktop Mac, or mirroring.
+function targetFrame(screens, mode) {
+  var selected;
+  if (mode === 'external') {
+    // NSScreen lists the primary display first: prefer it when it is external.
+    selected = screens.filter(function (s) { return !s.builtIn; })[0];
+  } else {
+    if (screens.length < 2 || !screens.some(function (s) { return !s.builtIn; })) return null;
+    selected = screens.filter(function (s) { return s.builtIn; })[0];
+  }
+  if (!selected) return null;
   var top = screens[0].frame.y + screens[0].frame.height;
-  var area = builtIn.visibleFrame;
+  var area = selected.visibleFrame;
   return {
     x: Math.round(area.x),
     y: Math.round(top - area.y - area.height),
@@ -37,7 +43,7 @@ function displayInfo() {
 
 function run(argv) {
   var screens = displayInfo();
-  var frame = targetFrame(screens);
+  var frame = targetFrame(screens, argv[1]);
   if (argv[0] === '--inspect') return JSON.stringify({ screens: screens, target: frame });
   if (!frame) return '';
   var process = Application('System Events').processes.byName('Preview');
@@ -49,7 +55,7 @@ function run(argv) {
     if (url !== argv[0]) continue;
     try {
       if (window.attributes.byName('AXFullScreen').value()) {
-        return 'Leave macOS full-screen mode to place the PDF on the built-in display.';
+        return 'Leave macOS full-screen mode to reposition the PDF window.';
       }
     } catch (_) {}
     var position = window.position();

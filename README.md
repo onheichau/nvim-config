@@ -69,6 +69,15 @@ one display, mirroring, or a closed lid, window placement is left alone. Disable
 this behavior with `vim.g.latex_preview_builtin_display = false`. Placement errors
 are reported without preventing PDF page synchronization.
 
+When you quit a TeX project (`:q`, `:q!`, `:x`, `:wq`, or its last `:bwipeout`),
+Preview brings the compiled PDF to the front and maximizes it on an external
+display, if available. With several external displays, it prefers the primary
+one. With none, it focuses the PDF without moving it. The exit action waits for
+any in-progress refresh so it cannot move the PDF back onto the built-in display
+afterward. When quitting Neovim with multiple loaded projects, only the last
+edited project's PDF is handed off. Disable this action with
+`vim.g.latex_preview_focus_on_exit = false`.
+
 Quitting Neovim with `:q`, `:q!`, `:x`, or `:wq` stops the compiler and cleans LaTeX
 auxiliary files, including `.aux`, `.log`, `.out`, `.fls`, `.fdb_latexmk`,
 `.synctex.gz`, and `indent.log`. Your source files and final PDF remain. This also
