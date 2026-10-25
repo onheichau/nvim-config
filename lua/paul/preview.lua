@@ -1,5 +1,7 @@
 local M = {}
 local locations = {}
+local scroll_anchors = {}
+local last_method = "No refresh yet"
 local generation = 0
 local busy, pending, warned = false, nil, false
 
@@ -43,6 +45,7 @@ launch = function(request)
       vim.uri_from_fname(request.pdf),
       tostring(request.page),
       display_script or "",
+      vim.g.latex_preview_scroll_restore ~= false and (scroll_anchors[request.pdf] or "") or "",
     },
     {
       text = true,
@@ -50,13 +53,25 @@ launch = function(request)
     vim.schedule_wrap(function(result)
       busy = false
       if result.code ~= 0 then
+        scroll_anchors[request.pdf] = nil
         local message = vim.trim(result.stderr)
         if message:find("(-1719)", 1, true) or message:find("(-1743)", 1, true) then
           message = message .. " (check your terminal's macOS Accessibility/Automation access)"
         end
         warn(message)
-      elseif vim.trim(result.stdout) ~= "" then
-        warn(vim.trim(result.stdout))
+      else
+        scroll_anchors[request.pdf] = nil
+        for line in result.stdout:gmatch("[^\r\n]+") do
+          local anchor = line:match("^PREVIEW_ANCHOR:(.+)$")
+          local method = line:match("^PREVIEW_METHOD:(.+)$")
+          if anchor then
+            scroll_anchors[request.pdf] = anchor
+          elseif method then
+            last_method = method
+          elseif vim.trim(line) ~= "" then
+            warn(vim.trim(line))
+          end
+        end
       end
       if pending then
         local next_request = pending
@@ -127,6 +142,9 @@ function M.setup()
     desc = "Refresh native Preview and follow the cursor's PDF page",
     force = true,
   })
+  vim.api.nvim_create_user_command("LatexPreviewInfo", function()
+    vim.notify("Preview refresh method: " .. last_method .. " (scroll = direct restore, dialog = fallback)")
+  end, { desc = "Show the most recent Preview refresh method", force = true })
 end
 
 return M

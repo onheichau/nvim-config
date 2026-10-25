@@ -1,4 +1,4 @@
--- Usage: osascript preview-sync.applescript PDF_PATH PDF_URL PHYSICAL_PAGE [DISPLAY_SCRIPT]
+-- Usage: osascript preview-sync.applescript PDF_PATH PDF_URL PHYSICAL_PAGE [DISPLAY_SCRIPT] [SCROLL_ANCHOR]
 -- A page of 0 refreshes without navigation. Reuse the document window so zoom
 -- and window geometry survive. UI actions require the terminal's existing
 -- Accessibility permission, as did the previous Preview refresh script.
@@ -10,6 +10,8 @@ on run argv
   set targetWindow to missing value
   set placementNote to ""
   set navigationStarted to false
+  set cachedAnchor to ""
+  if (count of argv) >= 5 then set cachedAnchor to item 5 of argv
 
   try
     tell application "System Events"
@@ -65,7 +67,11 @@ on run argv
 
         -- Preview disables Go to Page for a single-page PDF.
         set canNavigate to enabled of menu item "Go to Page…" of menu 1 of menu bar item "Go" of menu bar 1
-        if pageNumber > 0 and canNavigate then
+        set restoredScroll to false
+        if pageNumber > 0 and cachedAnchor is not "" then
+          set restoredScroll to my restoreScroll(pdfURL, pageNumber, cachedAnchor)
+        end if
+        if pageNumber > 0 and canNavigate and not restoredScroll then
           if not frontmost then error "Preview lost focus; navigation cancelled"
           set targetWindow to my findPDFWindow(pdfURL)
           if exists sheet 1 of targetWindow then error "Preview has a dialog open; navigation cancelled"
@@ -94,9 +100,82 @@ on run argv
     my restoreFocus(previousProcess)
     error messageText number messageNumber
   end try
+  set newAnchor to my captureScroll(pdfURL, pageNumber)
   my restoreFocus(previousProcess)
-  return placementNote
+  -- Neovim sessions loaded before this upgrade do not understand the metadata.
+  if (count of argv) < 5 then return placementNote
+  if restoredScroll then
+    set methodNote to "PREVIEW_METHOD:scroll"
+  else
+    set methodNote to "PREVIEW_METHOD:dialog"
+  end if
+  if newAnchor is not "" then return placementNote & linefeed & methodNote & linefeed & "PREVIEW_ANCHOR:" & newAnchor
+  return placementNote & linefeed & methodNote
 end run
+
+-- Cache only a normalized scroll position for an unchanged page/view layout.
+-- A missing/unsupported AX scroll control simply uses the proven dialog fallback.
+on scrollControls(pdfURL)
+  set liveWindow to my findPDFWindow(pdfURL)
+  if liveWindow is missing value then error "PDF window unavailable"
+  tell application "System Events" to tell process "Preview"
+    set documentArea to last scroll area of splitter group 1 of liveWindow
+    repeat with candidate in scroll bars of documentArea
+      if (value of attribute "AXOrientation" of candidate) is "AXVerticalOrientation" then
+        return {liveWindow, documentArea, contents of candidate}
+      end if
+    end repeat
+  end tell
+  error "PDF vertical scrollbar unavailable"
+end scrollControls
+
+on scrollSignature(liveWindow, documentArea, pageNumber)
+  tell application "System Events" to tell process "Preview"
+    set pageCount to last word of (name of liveWindow) as integer
+    set dimensions to (size of documentArea) & (size of UI element 1 of documentArea)
+  end tell
+  set signatureText to (pageNumber as text) & ":" & pageCount
+  repeat with dimensionValue in dimensions
+    if dimensionValue <= 0 then error "PDF layout is not ready"
+    set signatureText to signatureText & ":" & (dimensionValue as text)
+  end repeat
+  return signatureText
+end scrollSignature
+
+on restoreScroll(pdfURL, pageNumber, cachedAnchor)
+  try
+    set divider to offset of "|" in cachedAnchor
+    if divider < 2 then return false
+    set cachedSignature to text 1 thru (divider - 1) of cachedAnchor
+    set cachedValue to (text (divider + 1) thru -1 of cachedAnchor) as real
+    if cachedValue < 0 or cachedValue > 1 then return false
+    set controls to my scrollControls(pdfURL)
+    if my scrollSignature(item 1 of controls, item 2 of controls, pageNumber) is not cachedSignature then return false
+    tell application "System Events" to tell process "Preview"
+      if exists sheet 1 of (item 1 of controls) then return false
+      set value of (item 3 of controls) to cachedValue
+      set actualValue to value of (item 3 of controls) as real
+    end tell
+    set difference to actualValue - cachedValue
+    return difference > -0.0001 and difference < 0.0001
+  on error
+    return false
+  end try
+end restoreScroll
+
+on captureScroll(pdfURL, pageNumber)
+  if pageNumber <= 0 then return ""
+  try
+    set controls to my scrollControls(pdfURL)
+    tell application "System Events" to tell process "Preview"
+      if (name of item 1 of controls) does not contain ("Page " & pageNumber & " of ") then return ""
+      set scrollValue to value of (item 3 of controls) as real
+    end tell
+    return my scrollSignature(item 1 of controls, item 2 of controls, pageNumber) & "|" & scrollValue
+  on error
+    return ""
+  end try
+end captureScroll
 
 -- System Events resolves windows by their title. Page navigation changes that
 -- title, so never carry a window reference across a submitted page change.
