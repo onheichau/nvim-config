@@ -2,6 +2,7 @@ local M = {}
 local locations = {}
 local scroll_anchors = {}
 local last_method = "No refresh yet"
+local last_detail = ""
 local generation = 0
 local busy, pending, warned = false, nil, false
 
@@ -64,10 +65,13 @@ launch = function(request)
         for line in result.stdout:gmatch("[^\r\n]+") do
           local anchor = line:match("^PREVIEW_ANCHOR:(.+)$")
           local method = line:match("^PREVIEW_METHOD:(.+)$")
+          local detail = line:match("^PREVIEW_DETAIL:(.+)$")
           if anchor then
             scroll_anchors[request.pdf] = anchor
           elseif method then
             last_method = method
+          elseif detail then
+            last_detail = detail
           elseif vim.trim(line) ~= "" then
             warn(vim.trim(line))
           end
@@ -143,7 +147,7 @@ function M.setup()
     force = true,
   })
   vim.api.nvim_create_user_command("LatexPreviewInfo", function()
-    vim.notify("Preview refresh method: " .. last_method .. " (scroll = direct restore, dialog = fallback)")
+    vim.notify("Preview refresh method: " .. last_method .. "; " .. last_detail)
   end, { desc = "Show the most recent Preview refresh method", force = true })
 end
 

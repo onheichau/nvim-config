@@ -51,8 +51,8 @@ refreshing without jumping pages. The `.synctex.gz` file is retained while editi
 and removed only when you quit the project.
 After a successful navigation, synchronization remembers the PDF scrollbar position.
 Repeated edits on that page restore the scroll position directly, without page dialogs.
-The cache is invalidated when the target page, page count, viewport size, or document
-view dimensions change (for example, after zooming or moving displays). If restoration
+The cache is invalidated when the target page, page count, or viewport size changes.
+Transient document bounds and page-title text are not used for cache validation. If restoration
 is unavailable, the working adjacent-page-and-back navigation remains the fallback.
 Set `vim.g.latex_preview_scroll_restore = false` to use that fallback exclusively.
 `:LatexPreviewInfo` reports whether the last refresh used `scroll` or `dialog`.

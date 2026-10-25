@@ -34,7 +34,9 @@ local ok, err = pcall(function()
     vim.schedule(function()
       callback({
         code = 0,
-        stdout = "PREVIEW_METHOD:dialog\nPREVIEW_ANCHOR:" .. command[5] .. ":3:800:600:800:2400|0.7\n",
+        stdout = "PREVIEW_METHOD:dialog\nPREVIEW_DETAIL:test cache diagnostic\nPREVIEW_ANCHOR:"
+          .. command[5]
+          .. ":3:800:600|0.7\n",
         stderr = "",
       })
     end)
@@ -60,7 +62,7 @@ local ok, err = pcall(function()
     if index == 1 then
       assert(launches[index][7] == "", "first navigation had a stale anchor")
     elseif index == 2 then
-      assert(launches[index][7] == "3:3:800:600:800:2400|0.7", "same-page scroll anchor was not reused")
+      assert(launches[index][7] == "3:3:800:600|0.7", "same-page scroll anchor was not reused")
     end
     vim.wait(30) -- Drain the intercepted GUI response before the next refresh.
   end
@@ -92,6 +94,14 @@ local ok, err = pcall(function()
   )
   assert(launches[6][7] == "", "fallback-only mode still sent a scroll anchor")
   vim.system = system
+  local notify = vim.notify
+  local diagnostic
+  vim.notify = function(message)
+    diagnostic = message
+  end
+  vim.cmd.LatexPreviewInfo()
+  vim.notify = notify
+  assert(diagnostic:find("test cache diagnostic", 1, true), "fallback diagnostic was lost")
   vim.g.vimtex_view_enabled = 0
   print("PASS: real SyncTeX maps cursor to pages 3 and 1; paths with spaces; follow toggle")
 end)

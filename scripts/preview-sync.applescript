@@ -2,6 +2,7 @@
 -- A page of 0 refreshes without navigation. Reuse the document window so zoom
 -- and window geometry survive. UI actions require the terminal's existing
 -- Accessibility permission, as did the previous Preview refresh script.
+property scrollDiagnostic : "No cached position yet"
 on run argv
   set pdfPath to item 1 of argv
   set pdfURL to item 2 of argv
@@ -109,8 +110,9 @@ on run argv
   else
     set methodNote to "PREVIEW_METHOD:dialog"
   end if
-  if newAnchor is not "" then return placementNote & linefeed & methodNote & linefeed & "PREVIEW_ANCHOR:" & newAnchor
-  return placementNote & linefeed & methodNote
+  set detailNote to "PREVIEW_DETAIL:" & scrollDiagnostic
+  if newAnchor is not "" then return placementNote & linefeed & methodNote & linefeed & detailNote & linefeed & "PREVIEW_ANCHOR:" & newAnchor
+  return placementNote & linefeed & methodNote & linefeed & detailNote
 end run
 
 -- Cache only a normalized scroll position for an unchanged page/view layout.
@@ -131,8 +133,11 @@ end scrollControls
 
 on scrollSignature(liveWindow, documentArea, pageNumber)
   tell application "System Events" to tell process "Preview"
-    set pageCount to last word of (name of liveWindow) as integer
-    set dimensions to (size of documentArea) & (size of UI element 1 of documentArea)
+    -- The PDF document's children are its pages. Its title and total rendered
+    -- bounds can be stale/transient immediately after a reload, so avoid them.
+    set pageCount to count of UI elements of UI element 1 of documentArea
+    if pageCount < pageNumber then error "PDF page layout is not ready"
+    set dimensions to size of documentArea
   end tell
   set signatureText to (pageNumber as text) & ":" & pageCount
   repeat with dimensionValue in dimensions
@@ -150,15 +155,21 @@ on restoreScroll(pdfURL, pageNumber, cachedAnchor)
     set cachedValue to (text (divider + 1) thru -1 of cachedAnchor) as real
     if cachedValue < 0 or cachedValue > 1 then return false
     set controls to my scrollControls(pdfURL)
-    if my scrollSignature(item 1 of controls, item 2 of controls, pageNumber) is not cachedSignature then return false
+    set currentSignature to my scrollSignature(item 1 of controls, item 2 of controls, pageNumber)
+    if currentSignature is not cachedSignature then
+      set scrollDiagnostic to "Layout differs: " & cachedSignature & " -> " & currentSignature
+      return false
+    end if
     tell application "System Events" to tell process "Preview"
       if exists sheet 1 of (item 1 of controls) then return false
       set value of (item 3 of controls) to cachedValue
       set actualValue to value of (item 3 of controls) as real
     end tell
     set difference to actualValue - cachedValue
+    set scrollDiagnostic to "Direct scrollbar restoration"
     return difference > -0.0001 and difference < 0.0001
-  on error
+  on error errorMessage
+    set scrollDiagnostic to "Restore failed: " & errorMessage
     return false
   end try
 end restoreScroll
@@ -168,11 +179,11 @@ on captureScroll(pdfURL, pageNumber)
   try
     set controls to my scrollControls(pdfURL)
     tell application "System Events" to tell process "Preview"
-      if (name of item 1 of controls) does not contain ("Page " & pageNumber & " of ") then return ""
       set scrollValue to value of (item 3 of controls) as real
     end tell
     return my scrollSignature(item 1 of controls, item 2 of controls, pageNumber) & "|" & scrollValue
-  on error
+  on error errorMessage
+    set scrollDiagnostic to "Capture failed: " & errorMessage
     return ""
   end try
 end captureScroll
