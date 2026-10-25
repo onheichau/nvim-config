@@ -1,8 +1,6 @@
 local M = {}
 local locations = {}
 local scroll_anchors = {}
-local opened_sources = {}
-local active_project
 local last_method = "No refresh yet"
 local last_detail = ""
 local generation = 0
@@ -11,11 +9,6 @@ local busy, pending, warned = false, nil, false
 local function remember()
   local state = vim.b.vimtex
   if vim.bo.filetype == "tex" and state and state.tex then
-    if active_project ~= state.tex then
-      active_project = state.tex
-      generation = generation + 1
-      pending = nil
-    end
     locations[state.tex] = {
       source = vim.api.nvim_buf_get_name(0),
       line = vim.api.nvim_win_get_cursor(0)[1],
@@ -30,41 +23,11 @@ local function warn(message)
   end
 end
 
-local function source_identity(path)
-  local stat = vim.uv.fs_stat(path)
-  return stat and table.concat({ path, stat.dev, stat.ino }, ":") or nil
-end
-
-local function pdf_ready(path)
-  local fd = vim.uv.fs_open(path, "r", 0)
-  if not fd then
-    return false
-  end
-  local stat = vim.uv.fs_fstat(fd)
-  local header = stat and vim.uv.fs_read(fd, 5, 0)
-  local tail = stat and vim.uv.fs_read(fd, math.min(1024, stat.size), math.max(0, stat.size - 1024))
-  vim.uv.fs_close(fd)
-  return header == "%PDF-" and tail and tail:find("%%EOF", 1, true) ~= nil
-end
-
 local launch
 launch = function(request)
-  -- Revalidate after async SyncTeX/queued UI work: the source may have been
-  -- deleted or replaced, or a different document may now be active.
-  if
-    request.generation ~= generation
-    or source_identity(request.main) ~= request.identity
-    or not pdf_ready(request.pdf)
-  then
-    return
-  end
   if busy then
     pending = request
     return
-  end
-  local reopen = opened_sources[request.pdf] ~= request.identity
-  if reopen then
-    scroll_anchors[request.pdf] = nil
   end
   busy = true
   local script = vim.api.nvim_get_runtime_file("scripts/preview-sync.applescript", false)[1]
@@ -84,7 +47,6 @@ launch = function(request)
       tostring(request.page),
       display_script or "",
       vim.g.latex_preview_scroll_restore ~= false and (scroll_anchors[request.pdf] or "") or "",
-      reopen and "1" or "0",
     },
     {
       text = true,
@@ -99,7 +61,6 @@ launch = function(request)
         end
         warn(message)
       else
-        opened_sources[request.pdf] = request.identity
         scroll_anchors[request.pdf] = nil
         for line in result.stdout:gmatch("[^\r\n]+") do
           local anchor = line:match("^PREVIEW_ANCHOR:(.+)$")
@@ -139,22 +100,13 @@ function M.refresh()
   local location = locations[state.tex]
   generation = generation + 1
   local current = generation
-  local identity = source_identity(state.tex)
-  if not identity then
-    scroll_anchors[pdf] = nil
-    opened_sources[pdf] = nil
-    return
-  end
-  local function request(page)
-    launch({ pdf = pdf, page = page, main = state.tex, identity = identity, generation = current })
-  end
   if not location or vim.g.latex_preview_follow_cursor == false then
-    request(0)
+    launch({ pdf = pdf, page = 0 })
     return
   end
   if vim.fn.executable("synctex") == 0 then
     warn("synctex is missing; install it with tlmgr install synctex")
-    request(0)
+    launch({ pdf = pdf, page = 0 })
     return
   end
   vim.system(
@@ -173,7 +125,7 @@ function M.refresh()
       end
       local page = result.code == 0 and tonumber(result.stdout:match("\nPage:(%d+)")) or nil
       -- Blank lines/preamble may have no SyncTeX location: refresh without jumping.
-      request(page or 0)
+      launch({ pdf = pdf, page = page or 0 })
     end)
   )
 end

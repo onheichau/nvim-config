@@ -1,4 +1,4 @@
--- Usage: osascript preview-sync.applescript PDF_PATH PDF_URL PHYSICAL_PAGE [DISPLAY_SCRIPT] [SCROLL_ANCHOR] [REOPEN]
+-- Usage: osascript preview-sync.applescript PDF_PATH PDF_URL PHYSICAL_PAGE [DISPLAY_SCRIPT] [SCROLL_ANCHOR]
 -- A page of 0 refreshes without navigation. Reuse the document window so zoom
 -- and window geometry survive. UI actions require the terminal's existing
 -- Accessibility permission, as did the previous Preview refresh script.
@@ -13,14 +13,6 @@ on run argv
   set navigationStarted to false
   set cachedAnchor to ""
   if (count of argv) >= 5 then set cachedAnchor to item 5 of argv
-  set reopenDocument to false
-  if (count of argv) >= 6 then set reopenDocument to item 6 of argv is "1"
-  -- Avoid showing an OS alert for a source/PDF deleted while a refresh was queued.
-  try
-    do shell script "/usr/bin/test -r " & quoted form of pdfPath
-  on error
-    return "PREVIEW_METHOD:skipped" & linefeed & "PREVIEW_DETAIL:PDF no longer exists or is unreadable"
-  end try
 
   try
     tell application "System Events"
@@ -39,12 +31,10 @@ on run argv
       end if
     end tell
 
-    if targetWindow is missing value or reopenDocument then
-      -- Launch Services grants Preview access to this current file instance.
-      -- Direct AppleScript open can retain a stale sandbox reference after a
-      -- file was deleted and another PDF created with the same name.
+    if targetWindow is missing value then
+      -- Use Launch Services for a new/recreated PDF's sandbox access. Once the
+      -- window exists, the proven placement/navigation/scroll-cache path is unchanged.
       my openPDF(pdfPath)
-      set targetWindow to missing value
     end if
     tell application "Preview" to activate
 

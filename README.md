@@ -56,10 +56,10 @@ Transient document bounds and page-title text are not used for cache validation.
 is unavailable, the working adjacent-page-and-back navigation remains the fallback.
 Set `vim.g.latex_preview_scroll_restore = false` to use that fallback exclusively.
 `:LatexPreviewInfo` reports whether the last refresh used `scroll` or `dialog`.
-First opens and replaced source files use macOS Launch Services to give Preview
-access to the current PDF instance, including when a filename was reused after
-deletion. Replaced sources discard the old scroll cache. Queued requests are
-revalidated before launching, and deleted sources or incomplete PDFs are skipped.
+When no PDF window exists, macOS Launch Services opens the file and gives Preview
+access to the current PDF instance. Once open, the established display placement,
+cursor navigation, and scroll-cache pipeline runs without additional cancellation
+or source-file identity checks.
 
 With an external display connected and the built-in screen available, each refresh
 moves the PDF window onto the MacBook display and fills its usable area. This is a
