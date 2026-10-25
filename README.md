@@ -17,10 +17,11 @@ nvim main.tex
 - Every `:w` starts the continuous compiler when needed and rebuilds the PDF.
 - **Space l c** manually starts/stops the continuous compiler.
 - **Space l l** enables live editing for the current `.tex` buffer: after an **800 ms
-  pause**, the buffer is saved and `latexmk` rebuilds the PDF in Skim. On a new, empty
+  pause**, the buffer is saved and `latexmk` rebuilds the PDF in Preview on macOS. On a new, empty
   file it first creates a minimal article and places the cursor in the document body.
   The statusline says `LaTeX LIVE`. Press again to disable auto-save; manual saves still compile.
-- **Space l v** opens the PDF and jumps to the current source position.
+- **Space l v** opens the PDF at the cursor's page in Preview on macOS (`:LatexPreview`).
+  Other platforms use VimTeX's forward search.
 - **Space l s** disables auto-save for this buffer and stops its project's compiler.
 - **Space l e** shows compilation errors; **Space l o** opens compiler output.
 - **Space l t** opens the document outline; **Space l i** shows project information.
@@ -36,6 +37,16 @@ For included files, put `% !TeX root = ../main.tex` on the first line (adjust th
 The sample includes a chapter, equation reference and BibTeX bibliography. VimTeX/latexmk
 handle the main document, repeated passes and bibliography generation.
 Use `% !TeX program = xelatex` or `lualatex` at the top of the main file if your course needs it.
+
+On macOS, successful compilation refreshes the existing Preview document window
+and uses SyncTeX to jump to the PDF page corresponding to your cursor. Reusing the
+window avoids deliberately resetting its zoom, position, or size. The script briefly
+activates Preview to refresh it, then restores focus. Preview supports page-level
+navigation here, not exact equation/line positioning or inverse search. It uses
+Preview's English Go to Page dialog and the terminal's existing macOS Accessibility
+and Automation permissions. Set `vim.g.latex_preview_follow_cursor = false` to keep
+refreshing without jumping pages. The `.synctex.gz` file is retained while editing
+and removed only when you quit the project.
 
 Quitting Neovim with `:q`, `:q!`, `:x`, or `:wq` stops the compiler and cleans LaTeX
 auxiliary files, including `.aux`, `.log`, `.out`, `.fls`, `.fdb_latexmk`,
@@ -104,7 +115,6 @@ are disabled so multi-file project roots stay stable.
 
 ```sh
 brew install neovim git ripgrep tree-sitter-cli
-brew install --cask skim
 ```
 
 Install **one** TeX distribution. A compact, non-admin option is
@@ -121,7 +131,7 @@ test ! -e "$HOME/Library/TinyTeX" && (
 )
 export PATH="$HOME/Library/TinyTeX/bin/universal-darwin:$PATH"
 tlmgr postaction install script xetex
-tlmgr install latexmk amsmath amsfonts geometry hyperref collection-fontsrecommended chktex texcount
+tlmgr install latexmk synctex amsmath amsfonts geometry hyperref collection-fontsrecommended chktex texcount
 ```
 
 Neovim detects `~/Library/TinyTeX/bin/universal-darwin` automatically. To use `latexmk`
@@ -135,7 +145,10 @@ then `/Library/TeX/texbin` is detected automatically. Install extra packages wit
 Full MacTeX works as well. On Linux, install your distribution's TeX Live, latexmk and
 Zathura packages; the config selects Zathura there.
 
-In **Skim → Settings → Sync**:
+Skim is optional. To use it instead of native Preview, set
+`vim.g.vimtex_view_method = "skim"` in the VimTeX plugin's `init` function, enable
+`vim.g.vimtex_view_automatic = 1`, and remove `require("paul.preview").setup()`
+from its `config` function. In **Skim → Settings → Sync**:
 
 - Enable checking for file changes and automatic reload.
 - Select **Custom** PDF–TeX sync.

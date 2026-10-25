@@ -12,14 +12,12 @@ function M.check()
     end
   end
   if vim.fn.has("mac") == 1 then
-    if
-      vim.fn.isdirectory("/Applications/Skim.app") == 1
-      or vim.fn.isdirectory(vim.fn.expand("~/Applications/Skim.app")) == 1
-    then
-      vim.health.ok("Skim installed; <Space>lv opens the PDF at the current source line")
+    if vim.fn.executable("synctex") == 1 then
+      vim.health.ok("SyncTeX installed; <Space>lv follows the cursor's PDF page in native Preview")
     else
-      vim.health.error("Skim is missing", "brew install --cask skim")
+      vim.health.error("synctex is missing", "tlmgr install synctex")
     end
+    vim.health.info("Preview UI automation uses your terminal's macOS Accessibility/Automation access.")
   end
   vim.health.info(
     "<Space>ll toggles auto-save for the current TeX buffer; <Space>ls stops it and the compiler."

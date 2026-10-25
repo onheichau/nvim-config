@@ -3,11 +3,17 @@ return {
   lazy = false,
   init = function()
     vim.g.tex_flavor = "latex"
-    vim.g.vimtex_view_method = vim.fn.has("mac") == 1 and "skim" or "zathura"
-    vim.g.vimtex_view_skim_activate = 0
-    vim.g.vimtex_view_skim_sync = 0
+    if vim.fn.has("mac") == 1 then
+      vim.g.vimtex_view_method = "general"
+      vim.g.vimtex_view_general_viewer = "open"
+      vim.g.vimtex_view_general_options = "-g -a Preview @pdf"
+      vim.g.vimtex_view_automatic = 0
+    else
+      vim.g.vimtex_view_method = "zathura"
+    end
     vim.g.vimtex_compiler_method = "latexmk"
     vim.g.vimtex_compiler_latexmk = {
+      callback = 1,
       continuous = 1,
       options = { "-verbose", "-file-line-error", "-synctex=1", "-interaction=nonstopmode" },
     }
@@ -17,5 +23,8 @@ return {
   end,
   config = function()
     require("paul.latex").setup()
+    if vim.fn.has("mac") == 1 then
+      require("paul.preview").setup()
+    end
   end,
 }

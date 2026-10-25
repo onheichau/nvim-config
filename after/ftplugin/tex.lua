@@ -5,7 +5,11 @@ local function map(key, command, desc)
 end
 map("l", "<cmd>LatexLive<cr>", "Toggle LaTeX live auto-save")
 map("c", "<cmd>VimtexCompile<cr>", "Start/stop continuous compiler")
-map("v", "<cmd>VimtexView<cr>", "View PDF / forward search")
+map(
+  "v",
+  vim.fn.has("mac") == 1 and "<cmd>LatexPreview<cr>" or "<cmd>VimtexView<cr>",
+  "View PDF / forward search"
+)
 map("e", "<cmd>VimtexErrors<cr>", "LaTeX errors")
 map("o", "<cmd>VimtexCompileOutput<cr>", "LaTeX compiler output")
 map("t", "<cmd>VimtexTocOpen<cr>", "LaTeX table of contents")
