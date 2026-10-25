@@ -61,8 +61,10 @@ local ok, err = pcall(function()
     assert(launches[index][6]:match("preview%-display%.js$"), "display placement helper missing")
     if index == 1 then
       assert(launches[index][7] == "", "first navigation had a stale anchor")
+      assert(launches[index][8] == "1", "first open did not use Launch Services")
     elseif index == 2 then
       assert(launches[index][7] == "3:3:800:600|0.7", "same-page scroll anchor was not reused")
+      assert(launches[index][8] == "0", "ordinary edits unnecessarily reopened the PDF")
     end
     vim.wait(30) -- Drain the intercepted GUI response before the next refresh.
   end
@@ -93,6 +95,29 @@ local ok, err = pcall(function()
     "fallback-only refresh failed"
   )
   assert(launches[6][7] == "", "fallback-only mode still sent a scroll anchor")
+  vim.wait(30)
+  assert(vim.fn.rename(source, source .. ".old") == 0)
+  preview.refresh()
+  vim.wait(50)
+  assert(#launches == 6, "deleted source still opened an old PDF")
+  vim.fn.writefile(vim.fn.readfile(source .. ".old"), source)
+  preview.refresh()
+  assert(
+    vim.wait(5000, function()
+      return #launches == 7
+    end, 10),
+    "replacement-source refresh did not complete"
+  )
+  assert(launches[7][8] == "1", "replacement source did not renew Preview's file access")
+  assert(launches[7][7] == "", "replacement source reused an old scroll cache")
+  vim.wait(30)
+  local pdf = root .. "/main.pdf"
+  assert(vim.fn.rename(pdf, pdf .. ".saved") == 0)
+  vim.fn.writefile({ "%PDF-1.7", "not finished writing" }, pdf)
+  preview.refresh()
+  vim.wait(50)
+  assert(#launches == 7, "incomplete PDF was opened in Preview")
+  assert(vim.fn.rename(pdf .. ".saved", pdf) == 0)
   vim.system = system
   local notify = vim.notify
   local diagnostic
@@ -103,7 +128,7 @@ local ok, err = pcall(function()
   vim.notify = notify
   assert(diagnostic:find("test cache diagnostic", 1, true), "fallback diagnostic was lost")
   vim.g.vimtex_view_enabled = 0
-  print("PASS: real SyncTeX maps cursor to pages 3 and 1; paths with spaces; follow toggle")
+  print("PASS: SyncTeX, scroll cache, new/replaced sources, deleted sources, incomplete PDF protection")
 end)
 if not ok then
   print(err)

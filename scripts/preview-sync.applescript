@@ -1,4 +1,4 @@
--- Usage: osascript preview-sync.applescript PDF_PATH PDF_URL PHYSICAL_PAGE [DISPLAY_SCRIPT] [SCROLL_ANCHOR]
+-- Usage: osascript preview-sync.applescript PDF_PATH PDF_URL PHYSICAL_PAGE [DISPLAY_SCRIPT] [SCROLL_ANCHOR] [REOPEN]
 -- A page of 0 refreshes without navigation. Reuse the document window so zoom
 -- and window geometry survive. UI actions require the terminal's existing
 -- Accessibility permission, as did the previous Preview refresh script.
@@ -13,6 +13,14 @@ on run argv
   set navigationStarted to false
   set cachedAnchor to ""
   if (count of argv) >= 5 then set cachedAnchor to item 5 of argv
+  set reopenDocument to false
+  if (count of argv) >= 6 then set reopenDocument to item 6 of argv is "1"
+  -- Avoid showing an OS alert for a source/PDF deleted while a refresh was queued.
+  try
+    do shell script "/usr/bin/test -r " & quoted form of pdfPath
+  on error
+    return "PREVIEW_METHOD:skipped" & linefeed & "PREVIEW_DETAIL:PDF no longer exists or is unreadable"
+  end try
 
   try
     tell application "System Events"
@@ -31,15 +39,19 @@ on run argv
       end if
     end tell
 
-    if targetWindow is missing value then
-      tell application "Preview" to open (POSIX file pdfPath)
+    if targetWindow is missing value or reopenDocument then
+      -- Launch Services grants Preview access to this current file instance.
+      -- Direct AppleScript open can retain a stale sandbox reference after a
+      -- file was deleted and another PDF created with the same name.
+      my openPDF(pdfPath)
+      set targetWindow to missing value
     end if
     tell application "Preview" to activate
 
     tell application "System Events"
       tell process "Preview"
         -- Wait for the requested PDF instead of typing into an arbitrary window.
-        repeat 40 times
+        repeat 120 times
           repeat with candidate in windows
             try
               if (value of attribute "AXDocument" of candidate) is pdfURL then
@@ -114,6 +126,10 @@ on run argv
   if newAnchor is not "" then return placementNote & linefeed & methodNote & linefeed & detailNote & linefeed & "PREVIEW_ANCHOR:" & newAnchor
   return placementNote & linefeed & methodNote & linefeed & detailNote
 end run
+
+on openPDF(pdfPath)
+  do shell script "/usr/bin/open -g -a Preview " & quoted form of pdfPath
+end openPDF
 
 -- Cache only a normalized scroll position for an unchanged page/view layout.
 -- A missing/unsupported AX scroll control simply uses the proven dialog fallback.
