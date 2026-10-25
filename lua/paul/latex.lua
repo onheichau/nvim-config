@@ -128,7 +128,7 @@ function M.schedule(buf)
   local timer = assert(vim.uv.new_timer())
   timers[buf] = timer
   timer:start(
-    vim.g.latex_live_delay or 800,
+    vim.g.latex_live_delay or 250,
     0,
     vim.schedule_wrap(function()
       -- A stopped/replaced timer can already have a callback on the main queue.
@@ -171,7 +171,9 @@ function M.toggle()
       vim.cmd.startinsert()
     end
   else
-    vim.notify("LaTeX live on: this buffer saves after an 800 ms typing pause.")
+    vim.notify(
+      ("LaTeX live on: this buffer saves after a %d ms typing pause."):format(vim.g.latex_live_delay or 250)
+    )
   end
 end
 

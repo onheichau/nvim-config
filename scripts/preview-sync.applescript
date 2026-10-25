@@ -49,7 +49,12 @@ on run argv
         end repeat
         if targetWindow is missing value then error "Could not find the requested PDF window"
         perform action "AXRaise" of targetWindow
-        delay 0.15
+        repeat 100 times
+          if frontmost then exit repeat
+          delay 0.01
+        end repeat
+        -- Briefly allow Preview to reload after activation; avoid a long fixed wait.
+        delay 0.05
 
         -- Optional placement runs before opening the navigation sheet. Failure
         -- to move a window must not interrupt otherwise working PDF sync.

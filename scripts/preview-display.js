@@ -52,6 +52,10 @@ function run(argv) {
         return 'Leave macOS full-screen mode to place the PDF on the built-in display.';
       }
     } catch (_) {}
+    var position = window.position();
+    var size = window.size();
+    if (Math.abs(position[0] - frame.x) <= 1 && Math.abs(position[1] - frame.y) <= 1 &&
+        Math.abs(size[0] - frame.width) <= 1 && Math.abs(size[1] - frame.height) <= 1) return '';
     // Move before sizing, so macOS applies the target screen's constraints.
     // JXA setters avoid AppleScript's ambiguous dynamic window-property syntax.
     window.position = [frame.x, frame.y];

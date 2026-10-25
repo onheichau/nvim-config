@@ -16,7 +16,7 @@ nvim main.tex
 
 - Every `:w` starts the continuous compiler when needed and rebuilds the PDF.
 - **Space l c** manually starts/stops the continuous compiler.
-- **Space l l** enables live editing for the current `.tex` buffer: after an **800 ms
+- **Space l l** enables live editing for the current `.tex` buffer: after a **250 ms
   pause**, the buffer is saved and `latexmk` rebuilds the PDF in Preview on macOS. On a new, empty
   file it first creates a minimal article and places the cursor in the document body.
   The statusline says `LaTeX LIVE`. Press again to disable auto-save; manual saves still compile.
@@ -32,6 +32,8 @@ files manually. It ignores unnamed/read-only/special buffers and pauses if the s
 file changes outside Neovim. Normal writes, undo history and write hooks are preserved.
 The previous successful PDF remains visible while a new edit has a compilation error.
 Rendering follows a typing pause plus compiler time; it is not an unsaved-buffer renderer.
+The continuous compiler checks saved files every 100 ms instead of latexmk's default
+two seconds. Set `vim.g.latex_live_delay = 500` if you prefer a longer typing pause.
 
 For included files, put `% !TeX root = ../main.tex` on the first line (adjust the path).
 The sample includes a chapter, equation reference and BibTeX bibliography. VimTeX/latexmk

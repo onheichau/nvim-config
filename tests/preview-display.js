@@ -28,10 +28,14 @@ assert.deepEqual(targetFrame([primaryInternal, external]), { x: 0, y: 32, width:
 
 const url = 'file:///tmp/test.pdf';
 const moves = [];
+let currentPosition = [0, 0];
+let currentSize = [800, 600];
 const target = {
   attributes: { byName: (key) => ({ value: () => key === 'AXDocument' ? url : false }) },
-  set position(value) { moves.push(['position', Array.from(value)]); },
-  set size(value) { moves.push(['size', Array.from(value)]); },
+  get position() { return () => currentPosition; },
+  get size() { return () => currentSize; },
+  set position(value) { currentPosition = Array.from(value); moves.push(['position', currentPosition]); },
+  set size(value) { currentSize = Array.from(value); moves.push(['size', currentSize]); },
 };
 const unrelated = {
   attributes: { byName: () => ({ value: () => 'file:///tmp/unrelated.pdf' }) },
@@ -47,6 +51,8 @@ assert.deepEqual(moves, [
   ['position', [-1728, 32]], ['size', [1728, 1085]], ['position', [-1728, 32]],
 ]);
 moves.length = 0;
+assert.equal(context.run([url]), '');
+assert.equal(moves.length, 0, 'Already-positioned window was resized again');
 context.displayInfo = () => [internal];
 assert.equal(context.run([url]), '');
 assert.equal(moves.length, 0, 'Single-display window was moved');

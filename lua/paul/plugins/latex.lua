@@ -15,7 +15,14 @@ return {
     vim.g.vimtex_compiler_latexmk = {
       callback = 1,
       continuous = 1,
-      options = { "-verbose", "-file-line-error", "-synctex=1", "-interaction=nonstopmode" },
+      options = {
+        "-verbose",
+        "-file-line-error",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        -- latexmk defaults to a two-second delay between checking source files.
+        "-e '$sleep_time = 0.1;'",
+      },
     }
     vim.g.vimtex_quickfix_mode = 0
     vim.g.vimtex_mappings_disable = { n = { "K" } }
