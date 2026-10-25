@@ -8,8 +8,6 @@ on run argv
   set pageNumber to (item 3 of argv) as integer
   set previousProcess to missing value
   set targetWindow to missing value
-  set oldPosition to missing value
-  set oldSize to missing value
 
   try
     tell application "System Events"
@@ -20,8 +18,6 @@ on run argv
             try
               if (value of attribute "AXDocument" of candidate) is pdfURL then
                 set targetWindow to contents of candidate
-                set oldPosition to position of targetWindow
-                set oldSize to size of targetWindow
                 exit repeat
               end if
             end try
@@ -71,8 +67,9 @@ on run argv
           end tell
         end if
 
-        if oldPosition is not missing value then set position of targetWindow to oldPosition
-        if oldSize is not missing value then set size of targetWindow to oldSize
+        -- Keep the existing window's geometry untouched. Writing AX position or
+        -- size back can fail for tiled/full-screen windows or stale references
+        -- after the navigation sheet closes, even when navigation succeeded.
       end tell
     end tell
   on error messageText number messageNumber

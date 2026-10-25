@@ -40,7 +40,11 @@ launch = function(request)
     vim.schedule_wrap(function(result)
       busy = false
       if result.code ~= 0 then
-        warn(vim.trim(result.stderr) .. " (check your terminal's macOS Accessibility/Automation access)")
+        local message = vim.trim(result.stderr)
+        if message:find("(-1719)", 1, true) or message:find("(-1743)", 1, true) then
+          message = message .. " (check your terminal's macOS Accessibility/Automation access)"
+        end
+        warn(message)
       end
       if pending then
         local next_request = pending
