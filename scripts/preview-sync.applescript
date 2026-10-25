@@ -9,6 +9,7 @@ on run argv
   set previousProcess to missing value
   set targetWindow to missing value
   set placementNote to ""
+  set navigationStarted to false
 
   try
     tell application "System Events"
@@ -66,9 +67,10 @@ on run argv
         set canNavigate to enabled of menu item "Go to Page…" of menu 1 of menu bar item "Go" of menu bar 1
         if pageNumber > 0 and canNavigate then
           if not frontmost then error "Preview lost focus; navigation cancelled"
+          set targetWindow to my findPDFWindow(pdfURL)
           if exists sheet 1 of targetWindow then error "Preview has a dialog open; navigation cancelled"
-          my openPageDialog(targetWindow)
-          set reportedPage to value of text field 1 of sheet 1 of targetWindow
+          set navigationStarted to true
+          set reportedPage to my openPageDialog(pdfURL)
           -- On PDF reload, Preview can retain currentPage while resetting its
           -- scroll position to page one. Going to that same page is then a no-op.
           -- A real page transition resets PDFKit's stale navigation state.
@@ -78,16 +80,17 @@ on run argv
             else
               set neighboringPage to 2
             end if
-            my submitPage(targetWindow, neighboringPage)
-            my openPageDialog(targetWindow)
+            my submitPage(pdfURL, neighboringPage)
+            my openPageDialog(pdfURL)
           end if
-          my submitPage(targetWindow, pageNumber)
+          my submitPage(pdfURL, pageNumber)
         end if
 
         -- Navigation never restores window geometry after the sheet closes.
       end tell
     end tell
   on error messageText number messageNumber
+    if navigationStarted then my cancelPageDialog(pdfURL)
     my restoreFocus(previousProcess)
     error messageText number messageNumber
   end try
@@ -95,31 +98,75 @@ on run argv
   return placementNote
 end run
 
-on openPageDialog(targetWindow)
+-- System Events resolves windows by their title. Page navigation changes that
+-- title, so never carry a window reference across a submitted page change.
+on findPDFWindow(pdfURL)
+  tell application "System Events" to tell process "Preview"
+    repeat with candidate in windows
+      try
+        if (value of attribute "AXDocument" of candidate) is pdfURL then return contents of candidate
+      end try
+    end repeat
+  end tell
+  return missing value
+end findPDFWindow
+
+on openPageDialog(pdfURL)
   tell application "System Events" to tell process "Preview"
     if not frontmost then error "Preview lost focus; navigation cancelled"
-    keystroke "g" using {command down, option down}
-    repeat 40 times
-      if exists sheet 1 of targetWindow then return
+    -- Invoking the menu action avoids a shortcut being lost during sheet animation.
+    repeat 150 times
+      if enabled of menu item "Go to Page…" of menu 1 of menu bar item "Go" of menu bar 1 then exit repeat
+      delay 0.01
+    end repeat
+    click menu item "Go to Page…" of menu 1 of menu bar item "Go" of menu bar 1
+    repeat 150 times
+      set liveWindow to my findPDFWindow(pdfURL)
+      if liveWindow is not missing value then
+        try
+          if exists sheet 1 of liveWindow then
+            if exists text field 1 of sheet 1 of liveWindow then return value of text field 1 of sheet 1 of liveWindow
+          end if
+        end try
+      end if
       delay 0.01
     end repeat
     error "Preview did not show Go to Page"
   end tell
 end openPageDialog
 
-on submitPage(targetWindow, pageNumber)
+on submitPage(pdfURL, pageNumber)
   tell application "System Events" to tell process "Preview"
-    tell sheet 1 of targetWindow
+    set liveWindow to my findPDFWindow(pdfURL)
+    if liveWindow is missing value then error "Could not find the PDF during navigation"
+    tell sheet 1 of liveWindow
       set value of text field 1 to pageNumber as text
       click button "OK"
     end tell
-    repeat 40 times
-      if not (exists sheet 1 of targetWindow) then return
+    repeat 150 times
+      set liveWindow to my findPDFWindow(pdfURL)
+      if liveWindow is not missing value then
+        try
+          if not (exists sheet 1 of liveWindow) then return
+        end try
+      end if
       delay 0.01
     end repeat
     error "Preview did not finish page navigation"
   end tell
 end submitPage
+
+on cancelPageDialog(pdfURL)
+  try
+    set liveWindow to my findPDFWindow(pdfURL)
+    if liveWindow is missing value then return
+    tell application "System Events" to tell process "Preview"
+      tell sheet 1 of liveWindow
+        if exists static text "Go to page:" then click button "Cancel"
+      end tell
+    end tell
+  end try
+end cancelPageDialog
 
 on placePDF(displayScript, pdfURL)
   try
