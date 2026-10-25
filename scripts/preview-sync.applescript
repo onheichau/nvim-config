@@ -1,4 +1,4 @@
--- Usage: osascript preview-sync.applescript PDF_PATH PDF_URL PHYSICAL_PAGE
+-- Usage: osascript preview-sync.applescript PDF_PATH PDF_URL PHYSICAL_PAGE [DISPLAY_SCRIPT]
 -- A page of 0 refreshes without navigation. Reuse the document window so zoom
 -- and window geometry survive. UI actions require the terminal's existing
 -- Accessibility permission, as did the previous Preview refresh script.
@@ -8,6 +8,7 @@ on run argv
   set pageNumber to (item 3 of argv) as integer
   set previousProcess to missing value
   set targetWindow to missing value
+  set placementNote to ""
 
   try
     tell application "System Events"
@@ -50,6 +51,12 @@ on run argv
         perform action "AXRaise" of targetWindow
         delay 0.15
 
+        -- Optional placement runs before opening the navigation sheet. Failure
+        -- to move a window must not interrupt otherwise working PDF sync.
+        if (count of argv) >= 4 and item 4 of argv is not "" then
+          set placementNote to my placePDF(item 4 of argv, pdfURL)
+        end if
+
         -- Preview disables Go to Page for a single-page PDF.
         set canNavigate to enabled of menu item "Go to Page…" of menu 1 of menu bar item "Go" of menu bar 1
         if pageNumber > 0 and canNavigate then
@@ -67,9 +74,7 @@ on run argv
           end tell
         end if
 
-        -- Keep the existing window's geometry untouched. Writing AX position or
-        -- size back can fail for tiled/full-screen windows or stale references
-        -- after the navigation sheet closes, even when navigation succeeded.
+        -- Navigation never restores window geometry after the sheet closes.
       end tell
     end tell
   on error messageText number messageNumber
@@ -77,7 +82,16 @@ on run argv
     error messageText number messageNumber
   end try
   my restoreFocus(previousProcess)
+  return placementNote
 end run
+
+on placePDF(displayScript, pdfURL)
+  try
+    return do shell script "/usr/bin/osascript -l JavaScript " & quoted form of displayScript & " " & quoted form of pdfURL
+  on error placementError
+    return "Built-in display placement: " & placementError
+  end try
+end placePDF
 
 on restoreFocus(previousProcess)
   if previousProcess is missing value then return

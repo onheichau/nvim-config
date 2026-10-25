@@ -32,8 +32,18 @@ launch = function(request)
     busy = false
     return warn("preview-sync.applescript is missing")
   end
+  local display_script = vim.g.latex_preview_builtin_display ~= false
+      and vim.api.nvim_get_runtime_file("scripts/preview-display.js", false)[1]
+    or ""
   vim.system(
-    { "osascript", script, request.pdf, vim.uri_from_fname(request.pdf), tostring(request.page) },
+    {
+      "osascript",
+      script,
+      request.pdf,
+      vim.uri_from_fname(request.pdf),
+      tostring(request.page),
+      display_script or "",
+    },
     {
       text = true,
     },
@@ -45,6 +55,8 @@ launch = function(request)
           message = message .. " (check your terminal's macOS Accessibility/Automation access)"
         end
         warn(message)
+      elseif vim.trim(result.stdout) ~= "" then
+        warn(vim.trim(result.stdout))
       end
       if pending then
         local next_request = pending

@@ -48,6 +48,14 @@ and Automation permissions. Set `vim.g.latex_preview_follow_cursor = false` to k
 refreshing without jumping pages. The `.synctex.gz` file is retained while editing
 and removed only when you quit the project.
 
+With an external display connected and the built-in screen available, each refresh
+moves the PDF window onto the MacBook display and fills its usable area. This is a
+maximized normal window, not a separate macOS full-screen Space. Detection happens
+on every refresh, so plugging/unplugging monitors is handled automatically. With
+one display, mirroring, or a closed lid, window placement is left alone. Disable
+this behavior with `vim.g.latex_preview_builtin_display = false`. Placement errors
+are reported without preventing PDF page synchronization.
+
 Quitting Neovim with `:q`, `:q!`, `:x`, or `:wq` stops the compiler and cleans LaTeX
 auxiliary files, including `.aux`, `.log`, `.out`, `.fls`, `.fdb_latexmk`,
 `.synctex.gz`, and `indent.log`. Your source files and final PDF remain. This also

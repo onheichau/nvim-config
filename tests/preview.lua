@@ -52,6 +52,7 @@ local ok, err = pcall(function()
     )
     assert(launches[index][3] == vim.uv.fs_realpath(root .. "/main.pdf"), "wrong PDF")
     assert(launches[index][5] == case[2], "wrong SyncTeX page")
+    assert(launches[index][6]:match("preview%-display%.js$"), "display placement helper missing")
   end
   vim.g.latex_preview_follow_cursor = false
   preview.refresh()
@@ -62,6 +63,15 @@ local ok, err = pcall(function()
     "refresh without cursor following failed"
   )
   assert(launches[3][5] == "0", "disabled following still jumped to a page")
+  vim.g.latex_preview_builtin_display = false
+  preview.refresh()
+  assert(
+    vim.wait(5000, function()
+      return #launches == 4
+    end, 10),
+    "refresh with display placement disabled failed"
+  )
+  assert(launches[4][6] == "", "disabled display placement still invoked the helper")
   vim.system = system
   vim.g.vimtex_view_enabled = 0
   print("PASS: real SyncTeX maps cursor to pages 3 and 1; paths with spaces; follow toggle")
