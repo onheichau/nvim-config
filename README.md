@@ -64,7 +64,16 @@ Automatic page breaks are supported without `\newpage`. The cursor's column is
 passed to SyncTeX. When a long source line maps to multiple PDF pages, native
 macOS PDFKit matches the words around the cursor to choose the appropriate page,
 including text immediately after a page break. Uncertain text/math matches fall
-back to SyncTeX; this extra text lookup runs only for ambiguous multi-page results.
+back to SyncTeX.
+
+Preview also follows the cursor's vertical position within the page, so output in
+the lower quarter is brought into view. Native PDFKit provides text bounds (or
+SyncTeX provides an approximate line position for math); the scrollbar moves
+only when that output leaves the middle 60% of the viewport. It then aims to
+center the output, subject to the document's top/bottom scroll limits. Set
+`vim.g.latex_preview_precise_scroll = false` to restore page-only navigation and
+the previous fast scroll-cache behavior. The new lookup reads the PDF locally
+and does not change PDF contents, zoom, display placement, or the exit action.
 
 With an external display connected and the built-in screen available, each refresh
 moves the PDF window onto the MacBook display and fills its usable area. This is a

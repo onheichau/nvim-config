@@ -1,4 +1,4 @@
--- Usage: osascript preview-sync.applescript PDF_PATH PDF_URL PHYSICAL_PAGE [DISPLAY_SCRIPT] [SCROLL_ANCHOR]
+-- Usage: osascript preview-sync.applescript PDF_PATH PDF_URL PHYSICAL_PAGE [DISPLAY_SCRIPT] [SCROLL_ANCHOR] [PAGE_Y_FRACTION]
 -- A page of 0 refreshes without navigation. Reuse the document window so zoom
 -- and window geometry survive. UI actions require the terminal's existing
 -- Accessibility permission, as did the previous Preview refresh script.
@@ -13,6 +13,8 @@ on run argv
   set navigationStarted to false
   set cachedAnchor to ""
   if (count of argv) >= 5 then set cachedAnchor to item 5 of argv
+  set targetY to -1
+  if (count of argv) >= 6 then set targetY to item 6 of argv as real
 
   try
     tell application "System Events"
@@ -71,7 +73,12 @@ on run argv
         -- Preview disables Go to Page for a single-page PDF.
         set canNavigate to enabled of menu item "Go to Page…" of menu 1 of menu bar item "Go" of menu bar 1
         set restoredScroll to false
-        if pageNumber > 0 and cachedAnchor is not "" then
+        set positionedCursor to false
+        if pageNumber > 0 and targetY >= 0 and targetY <= 1 then
+          set positionedCursor to my centerCursor(pdfURL, pageNumber, targetY)
+          set restoredScroll to positionedCursor
+        end if
+        if not restoredScroll and pageNumber > 0 and cachedAnchor is not "" then
           set restoredScroll to my restoreScroll(pdfURL, pageNumber, cachedAnchor)
         end if
         if pageNumber > 0 and canNavigate and not restoredScroll then
@@ -93,6 +100,11 @@ on run argv
             my openPageDialog(pdfURL)
           end if
           my submitPage(pdfURL, pageNumber)
+        end if
+        -- If offscreen page bounds weren't ready, navigation/cache restoration
+        -- above makes them available. Then refine the position within that page.
+        if not positionedCursor and pageNumber > 0 and targetY >= 0 and targetY <= 1 then
+          if my centerCursor(pdfURL, pageNumber, targetY) then set restoredScroll to true
         end if
 
         -- Navigation never restores window geometry after the sheet closes.
@@ -120,6 +132,51 @@ end run
 on openPDF(pdfPath)
   do shell script "/usr/bin/open -g -a Preview " & quoted form of pdfPath
 end openPDF
+
+on centeredScroll(currentValue, pageTop, pageHeight, targetY, viewportTop, viewportHeight, documentHeight)
+  if documentHeight <= viewportHeight then return currentValue
+  set relativeY to pageTop + pageHeight * targetY - viewportTop
+  -- Keep already-readable output steady instead of scrolling on every keystroke.
+  if relativeY >= viewportHeight * 0.2 and relativeY <= viewportHeight * 0.8 then return currentValue
+  set desiredValue to currentValue + (relativeY - viewportHeight * 0.5) / (documentHeight - viewportHeight)
+  if desiredValue < 0 then return 0
+  if desiredValue > 1 then return 1
+  return desiredValue
+end centeredScroll
+
+on centerCursor(pdfURL, pageNumber, targetY)
+  try
+    set controls to my scrollControls(pdfURL)
+    tell application "System Events" to tell process "Preview"
+      if exists sheet 1 of (item 1 of controls) then return false
+      set area to item 2 of controls
+      set container to UI element 1 of area
+      set pageElement to UI element pageNumber of container
+      set firstPage to UI element 1 of container
+      set lastPage to last UI element of container
+      set pageTop to item 2 of (position of pageElement)
+      set pageHeight to item 2 of (size of pageElement)
+      set viewportTop to item 2 of (position of area)
+      set viewportHeight to item 2 of (size of area)
+      set documentHeight to (item 2 of (position of lastPage)) + (item 2 of (size of lastPage)) - (item 2 of (position of firstPage))
+      if pageHeight <= 0 or viewportHeight <= 0 then return false
+      set currentValue to value of (item 3 of controls) as real
+    end tell
+    set desiredValue to my centeredScroll(currentValue, pageTop, pageHeight, targetY, viewportTop, viewportHeight, documentHeight)
+    if desiredValue is not currentValue then
+      tell application "System Events" to set value of (item 3 of controls) to desiredValue
+    end if
+    -- Scroll changes can also change the window title; refresh the AX reference.
+    set controls to my scrollControls(pdfURL)
+    tell application "System Events" to set actualValue to value of (item 3 of controls) as real
+    set difference to actualValue - desiredValue
+    set scrollDiagnostic to "Following cursor output within page " & pageNumber
+    return difference > -0.0001 and difference < 0.0001
+  on error errorMessage
+    set scrollDiagnostic to "Precise scroll unavailable: " & errorMessage
+    return false
+  end try
+end centerCursor
 
 -- Cache only a normalized scroll position for an unchanged page/view layout.
 -- A missing/unsupported AX scroll control simply uses the proven dialog fallback.

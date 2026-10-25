@@ -27,7 +27,7 @@ local ok, err = pcall(function()
   local system = vim.system
   local launches = {}
   vim.system = function(command, options, callback)
-    if command[1] ~= "osascript" then
+    if command[1] ~= "osascript" or not command[2]:match("preview%-sync%.applescript$") then
       return system(command, options, callback)
     end
     launches[#launches + 1] = command

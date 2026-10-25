@@ -60,6 +60,7 @@ launch = function(request)
       tostring(request.page),
       display_script or "",
       vim.g.latex_preview_scroll_restore ~= false and (scroll_anchors[request.pdf] or "") or "",
+      tostring(request.position or -1),
     },
     {
       text = true,
@@ -149,14 +150,23 @@ function M.refresh()
         end
       end
       local resolver = vim.api.nvim_get_runtime_file("scripts/preview-page.js", false)[1]
-      if #pages > 1 and resolver and vim.fn.has("mac") == 1 then
-        -- SyncTeX may map a long soft-wrapped source line to several pages.
-        -- Use PDFKit text around the cursor only for that ambiguous case.
+      if
+        (#pages > 1 or (page and vim.g.latex_preview_precise_scroll ~= false))
+        and resolver
+        and vim.fn.has("mac") == 1
+      then
+        -- PDFKit resolves ambiguous page matches and supplies text bounds for
+        -- within-page following. Page-only mode avoids this on unambiguous lines.
         vim.system(
           { "osascript", "-l", "JavaScript", resolver, pdf },
           {
             text = true,
-            stdin = vim.json.encode({ pages = pages, before = location.before, after = location.after }),
+            stdin = vim.json.encode({
+              pages = pages,
+              before = location.before,
+              after = location.after,
+              fallback = { page = page, y = tonumber(result.stdout:match("\nPage:%d+.-\ny:([%d%.%-]+)")) },
+            }),
           },
           vim.schedule_wrap(function(resolved)
             if current ~= generation then
@@ -164,9 +174,16 @@ function M.refresh()
             end
             local decoded, answer = pcall(vim.json.decode, resolved.stdout or "")
             local selected = resolved.code == 0 and decoded and type(answer) == "table" and answer.page
+            local position = resolved.code == 0 and decoded and type(answer) == "table" and answer.y
             launch({
               pdf = pdf,
               page = type(selected) == "number" and seen[selected] and selected or page or 0,
+              position = vim.g.latex_preview_precise_scroll ~= false
+                  and type(position) == "number"
+                  and position >= 0
+                  and position <= 1
+                  and position
+                or nil,
             })
           end)
         )

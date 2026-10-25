@@ -72,6 +72,14 @@ local ok, err = pcall(function()
       tonumber(launches[index][5]) == case[2],
       ("cursor column %d: expected page %d, got %s"):format(case[1], case[2], launches[index][5])
     )
+    local position = tonumber(launches[index][8])
+    assert(position and position >= 0 and position <= 1, "cursor position within page is missing")
+    if index == 1 then
+      assert(position > 0.75, "last word on page 1 was not near its bottom")
+    end
+    if index == 2 then
+      assert(position < 0.25, "first word on page 2 was not near its top")
+    end
     vim.wait(30)
   end
   vim.system = system
