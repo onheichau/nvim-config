@@ -60,6 +60,11 @@ When no PDF window exists, macOS Launch Services opens the file and gives Previe
 access to the current PDF instance. Once open, the established display placement,
 cursor navigation, and scroll-cache pipeline runs without additional cancellation
 or source-file identity checks.
+Automatic page breaks are supported without `\newpage`. The cursor's column is
+passed to SyncTeX. When a long source line maps to multiple PDF pages, native
+macOS PDFKit matches the words around the cursor to choose the appropriate page,
+including text immediately after a page break. Uncertain text/math matches fall
+back to SyncTeX; this extra text lookup runs only for ambiguous multi-page results.
 
 With an external display connected and the built-in screen available, each refresh
 moves the PDF window onto the MacBook display and fills its usable area. This is a

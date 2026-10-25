@@ -14,9 +14,14 @@ local function remember()
   if vim.bo.filetype == "tex" and state and state.tex then
     last_project = state.tex
     handed_off[state.tex] = nil
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local line = vim.api.nvim_get_current_line()
     locations[state.tex] = {
       source = vim.api.nvim_buf_get_name(0),
-      line = vim.api.nvim_win_get_cursor(0)[1],
+      line = cursor[1],
+      column = cursor[2] + 1,
+      before = line:sub(1, cursor[2]),
+      after = line:sub(cursor[2] + 1),
     }
   end
 end
@@ -125,7 +130,7 @@ function M.refresh()
       "synctex",
       "view",
       "-i",
-      location.line .. ":1:" .. location.source,
+      location.line .. ":" .. location.column .. ":" .. location.source,
       "-o",
       pdf,
     },
@@ -135,6 +140,38 @@ function M.refresh()
         return
       end
       local page = result.code == 0 and tonumber(result.stdout:match("\nPage:(%d+)")) or nil
+      local pages, seen = {}, {}
+      for candidate in result.stdout:gmatch("\nPage:(%d+)") do
+        candidate = tonumber(candidate)
+        if not seen[candidate] then
+          pages[#pages + 1] = candidate
+          seen[candidate] = true
+        end
+      end
+      local resolver = vim.api.nvim_get_runtime_file("scripts/preview-page.js", false)[1]
+      if #pages > 1 and resolver and vim.fn.has("mac") == 1 then
+        -- SyncTeX may map a long soft-wrapped source line to several pages.
+        -- Use PDFKit text around the cursor only for that ambiguous case.
+        vim.system(
+          { "osascript", "-l", "JavaScript", resolver, pdf },
+          {
+            text = true,
+            stdin = vim.json.encode({ pages = pages, before = location.before, after = location.after }),
+          },
+          vim.schedule_wrap(function(resolved)
+            if current ~= generation then
+              return
+            end
+            local decoded, answer = pcall(vim.json.decode, resolved.stdout or "")
+            local selected = resolved.code == 0 and decoded and type(answer) == "table" and answer.page
+            launch({
+              pdf = pdf,
+              page = type(selected) == "number" and seen[selected] and selected or page or 0,
+            })
+          end)
+        )
+        return
+      end
       -- Blank lines/preamble may have no SyncTeX location: refresh without jumping.
       launch({ pdf = pdf, page = page or 0 })
     end)
